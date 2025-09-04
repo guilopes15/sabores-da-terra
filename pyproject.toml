@@ -6,8 +6,9 @@ authors = [
     {name = "guilherme",email = "guilherme-lopes58@hotmail.com"}
 ]
 readme = "README.md"
-requires-python = "3.12.*"
+requires-python = ">=3.12,<3.13"
 dependencies = [
+    "sqlalchemy (>=2.0.43,<3.0.0)"
 ]
 
 [tool.poetry]
@@ -17,6 +18,20 @@ packages = [{include = "sabores_da_terra", from = "src"}]
 [tool.poetry.group.dev.dependencies]
 mkdocs = "^1.6.1"
 mkdocs-material = "^9.6.18"
+ruff = "^0.12.11"
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ['migrations']
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
