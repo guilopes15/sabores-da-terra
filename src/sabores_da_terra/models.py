@@ -42,11 +42,11 @@ class Product:
     )
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False, unique=True)
     description: Mapped[Optional[str]] = mapped_column(
         nullable=True, default=None
     )
-    price: Mapped[Decimal] = mapped_column(nullable=False)
+    price: Mapped[Decimal] = mapped_column(nullable=False, default=0)
     stock_quantity: Mapped[int] = mapped_column(nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()
@@ -59,8 +59,10 @@ class Product:
 @table_registry.mapped_as_dataclass
 class Order:
     __tablename__ = 'orders'
-    __table_args__ = CheckConstraint(
-        'total_amount > 0', name='check_total_amount_positive'
+    __table_args__ = (
+        CheckConstraint(
+            'total_amount > 0', name='check_total_amount_positive'
+        ),
     )
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
@@ -85,8 +87,8 @@ class Order:
 @table_registry.mapped_as_dataclass
 class OrderItem:
     __tablename__ = 'order_items'
-    __table_args__ = CheckConstraint(
-        'quantity > 0', name='check_quantity_positive'
+    __table_args__ = (
+        CheckConstraint('quantity > 0', name='check_quantity_positive'),
     )
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
