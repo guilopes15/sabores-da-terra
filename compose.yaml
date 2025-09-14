@@ -1,0 +1,25 @@
+services:
+  sabores_da_terra_database:
+    image: postgres
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_DB: app_db
+      POSTGRES_PASSWORD: app_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  sabores_da_terra_app:
+    image: sabores_da_terra
+    build: .
+    entrypoint: ./entrypoint.sh
+    ports:
+      - "8000:8000"
+    depends_on:
+      - sabores_da_terra_database
+    environment:
+      DATABASE_URL: postgresql+psycopg://app_user:app_password@sabores_da_terra_database:5432/app_db
+
+volumes:
+  pgdata:
