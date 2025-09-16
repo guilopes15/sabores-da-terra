@@ -46,3 +46,8 @@ class ProductUpdate(BaseModel):
     price: Decimal | None = None
     stock_quantity: int | None = None
     description: str | None = None
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

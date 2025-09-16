@@ -7,6 +7,7 @@ from testcontainers.postgres import PostgresContainer
 from src.sabores_da_terra.app import app
 from src.sabores_da_terra.database import get_session
 from src.sabores_da_terra.models import Product, User, table_registry
+from src.sabores_da_terra.security import get_password_hash
 
 
 @pytest.fixture
@@ -40,10 +41,16 @@ async def session(engine):
 
 @pytest_asyncio.fixture
 async def user(session):
-    db_user = User(username='test', email='test@test.com', password='1234')
+    password = '1234'
+    db_user = User(
+        username='test',
+        email='test@test.com',
+        password=get_password_hash(password)
+    )
     session.add(db_user)
     await session.commit()
     await session.refresh(db_user)
+    db_user.clean_password = password
     return db_user
 
 
