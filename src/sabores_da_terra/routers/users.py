@@ -14,6 +14,7 @@ from src.sabores_da_terra.schemas import (
     UserPublic,
     UserSchema,
 )
+from src.sabores_da_terra.security import get_password_hash
 
 router = APIRouter(prefix='/users', tags=['users'])
 T_Session = Annotated[AsyncSession, Depends(get_session)]
@@ -29,7 +30,11 @@ async def create_user(user: UserSchema, session: T_Session):
             status_code=HTTPStatus.CONFLICT, detail='Email already exists.'
         )
 
-    db_user = User(**user.model_dump())
+    db_user = User(
+        email=user.email,
+        username=user.username,
+        password=get_password_hash(user.password)
+    )
     session.add(db_user)
     await session.commit()
     await session.refresh(db_user)
@@ -79,7 +84,7 @@ async def update_user(user_id: int, user: UserSchema, session: T_Session):
     try:
         db_user.username = user.username
         db_user.email = user.email
-        db_user.password = user.password
+        db_user.password = get_password_hash(user.password)
         await session.commit()
         await session.refresh(db_user)
 
