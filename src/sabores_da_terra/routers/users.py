@@ -14,10 +14,11 @@ from src.sabores_da_terra.schemas import (
     UserPublic,
     UserSchema,
 )
-from src.sabores_da_terra.security import get_password_hash
+from src.sabores_da_terra.security import get_current_user, get_password_hash
 
 router = APIRouter(prefix='/users', tags=['users'])
 T_Session = Annotated[AsyncSession, Depends(get_session)]
+T_CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 @router.post('/', response_model=UserPublic, status_code=HTTPStatus.CREATED)
@@ -61,36 +62,45 @@ async def read_user_by_id(user_id: int, session: T_Session):
 
 
 @router.delete('/{user_id}', response_model=Message)
-async def delete_user(user_id: int, session: T_Session):
-    db_user = await session.scalar(select(User).where(User.id == user_id))
-    if not db_user:
+async def delete_user(
+    user_id: int,
+    session: T_Session,
+    current_user: T_CurrentUser
+):
+    if current_user.id != user_id:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='User does not exists.'
+            status_code=HTTPStatus.FORBIDDEN,
+            detail='Not enough permission.'
         )
 
-    await session.delete(db_user)
+    await session.delete(current_user)
     await session.commit()
     return {'message': 'User deleted'}
 
 
 @router.put('/{user_id}', response_model=UserPublic)
-async def update_user(user_id: int, user: UserSchema, session: T_Session):
-    db_user = await session.scalar(select(User).where(User.id == user_id))
-    if not db_user:
+async def update_user(
+    user_id: int,
+    user: UserSchema,
+    session: T_Session,
+    current_user: T_CurrentUser
+):
+    if current_user.id != user_id:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='User does not exists.'
+            status_code=HTTPStatus.FORBIDDEN,
+            detail='Not enough permission.'
         )
 
     try:
-        db_user.username = user.username
-        db_user.email = user.email
-        db_user.password = get_password_hash(user.password)
+        current_user.username = user.username
+        current_user.email = user.email
+        current_user.password = get_password_hash(user.password)
         await session.commit()
-        await session.refresh(db_user)
+        await session.refresh(current_user)
 
     except IntegrityError:
         raise HTTPException(
             status_code=HTTPStatus.CONFLICT, detail='Email already exists.'
         )
 
-    return db_user
+    return current_user
