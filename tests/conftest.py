@@ -1,6 +1,10 @@
+from contextlib import contextmanager
+from datetime import datetime
+
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
+from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from testcontainers.postgres import PostgresContainer
 
@@ -40,45 +44,51 @@ async def session(engine):
 
 
 @pytest_asyncio.fixture
-async def user(session):
-    password = '1234'
-    db_user = User(
-        username='test',
-        email='test@test.com',
-        password=get_password_hash(password)
-    )
-    session.add(db_user)
-    await session.commit()
-    await session.refresh(db_user)
-    db_user.clean_password = password
-    return db_user
+async def user(session, mock_db_time):
+    with mock_db_time(model=User, time=datetime(2025, 9, 17)):
+        password = '1234'
+        db_user = User(
+            username='test',
+            email='test@test.com',
+            password=get_password_hash(password),
+        )
+        session.add(db_user)
+        await session.commit()
+        await session.refresh(db_user)
+        db_user.clean_password = password
+        return db_user
 
 
 @pytest_asyncio.fixture
-async def other_user(session):
-    db_user = User(username='test', email='other@test.com', password='1234')
-    session.add(db_user)
-    await session.commit()
-    await session.refresh(db_user)
-    return db_user
+async def other_user(session, mock_db_time):
+    with mock_db_time(model=User, time=datetime(2025, 9, 17)):
+        db_user = User(
+            username='test', email='other@test.com', password='1234'
+        )
+        session.add(db_user)
+        await session.commit()
+        await session.refresh(db_user)
+        return db_user
 
 
 @pytest_asyncio.fixture
-async def product(session):
-    db_product = Product(name='uva', price=25.50, stock_quantity=8)
-    session.add(db_product)
-    await session.commit()
-    await session.refresh(db_product)
-    return db_product
+async def product(session, mock_db_time):
+    with mock_db_time(model=Product, time=datetime(2025, 9, 17)):
+        db_product = Product(name='uva', price=25.50, stock_quantity=8)
+        session.add(db_product)
+        await session.commit()
+        await session.refresh(db_product)
+        return db_product
 
 
 @pytest_asyncio.fixture
-async def other_product(session):
-    db_product = Product(name='pera', price=30.99, stock_quantity=20)
-    session.add(db_product)
-    await session.commit()
-    await session.refresh(db_product)
-    return db_product
+async def other_product(session, mock_db_time):
+    with mock_db_time(model=Product, time=datetime(2025, 9, 17)):
+        db_product = Product(name='pera', price=30.99, stock_quantity=20)
+        session.add(db_product)
+        await session.commit()
+        await session.refresh(db_product)
+        return db_product
 
 
 @pytest.fixture
@@ -91,3 +101,26 @@ def token(client, user):
         },
     )
     return response.json()['access_token']
+
+
+@contextmanager
+def _mock_db_time(*, model, time=datetime(2025, 9, 17)):
+    def fake_time_hook(mapper, connection, target):
+        if hasattr(target, 'created_at'):
+            target.created_at = time
+        if hasattr(target, 'updated_at'):
+            target.updated_at = time
+
+    event.listen(model, 'before_insert', fake_time_hook)
+    event.listen(model, 'before_update', fake_time_hook)
+
+    yield time
+
+    # Remove both event listeners
+    event.remove(model, 'before_insert', fake_time_hook)
+    event.remove(model, 'before_update', fake_time_hook)
+
+
+@pytest.fixture
+def mock_db_time():
+    return _mock_db_time

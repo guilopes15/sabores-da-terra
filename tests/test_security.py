@@ -17,9 +17,7 @@ def test_create_access_token(user):
     data = {'sub': user.email}
     token = create_access_token(data)
     result = decode(
-        token,
-        Settings().SECRET_KEY,
-        algorithms=[Settings().ALGORITHM]
+        token, Settings().SECRET_KEY, algorithms=[Settings().ALGORITHM]
     )
 
     assert user.email in result.values()

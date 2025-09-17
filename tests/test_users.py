@@ -1,9 +1,23 @@
-def test_create_user(client):
-    response = client.post(
-        '/users',
-        json={'email': '0@a.com', 'password': '0000000', 'username': '000'},
-    )
-    assert response.json() == {'email': '0@a.com', 'username': '000', 'id': 1}
+from src.sabores_da_terra.models import User
+
+
+def test_create_user(client, mock_db_time):
+    with mock_db_time(model=User) as time:
+        response = client.post(
+            '/users',
+            json={
+                'email': '0@a.com',
+                'password': '0000000',
+                'username': '000',
+            },
+        )
+    assert response.json() == {
+        'email': '0@a.com',
+        'username': '000',
+        'id': 1,
+        'created_at': time.isoformat(),
+        'updated_at': time.isoformat(),
+    }
 
 
 def test_create_user_existent(client, user):
@@ -21,17 +35,29 @@ def test_read_users(client):
 
 def test_read_users_with_users(client, user):
     response = client.get('/users')
+
     assert response.json() == {
-        'users': [{'username': 'test', 'email': 'test@test.com', 'id': 1}]
+        'users': [
+            {
+                'username': 'test',
+                'email': 'test@test.com',
+                'id': 1,
+                'created_at': user.created_at.isoformat(),
+                'updated_at': user.updated_at.isoformat(),
+            }
+        ]
     }
 
 
 def test_read_user_by_id(client, user):
     response = client.get(f'/users/{user.id}')
+
     assert response.json() == {
         'username': 'test',
         'email': 'test@test.com',
         'id': 1,
+        'created_at': user.created_at.isoformat(),
+        'updated_at': user.updated_at.isoformat(),
     }
 
 
@@ -41,15 +67,15 @@ def test_read_user_by_id_wrong_user(client, user):
 
 
 def test_delete_user(client, user, token):
-    response = client.delete(f'/users/{user.id}',
-                             headers={'Authorization': f'bearer {token}'}
+    response = client.delete(
+        f'/users/{user.id}', headers={'Authorization': f'bearer {token}'}
     )
     assert response.json() == {'message': 'User deleted'}
 
 
 def test_delete_user_not_found(client, user, token):
-    response = client.delete('/users/999',
-                             headers={'Authorization': f'bearer {token}'}
+    response = client.delete(
+        '/users/999', headers={'Authorization': f'bearer {token}'}
     )
     assert response.json() == {'detail': 'Not enough permission.'}
 
@@ -61,12 +87,16 @@ def test_update_user(client, user, token):
             'username': 'test2',
             'password': '369258147',
             'email': 'example@test.com',
-        }, headers={'Authorization': f'bearer {token}'}
+        },
+        headers={'Authorization': f'bearer {token}'},
     )
+
     assert response.json() == {
         'username': 'test2',
         'email': 'example@test.com',
         'id': 1,
+        'created_at': user.created_at.isoformat(),
+        'updated_at': user.updated_at.isoformat(),
     }
 
 
@@ -77,7 +107,8 @@ def test_update_user_email_already_exists(client, user, other_user, token):
             'username': 'test3',
             'email': other_user.email,
             'password': '1258963',
-        }, headers={'Authorization': f'bearer {token}'}
+        },
+        headers={'Authorization': f'bearer {token}'},
     )
     assert response.json() == {'detail': 'Email already exists.'}
 
@@ -89,7 +120,8 @@ def test_update_user_not_found(client, user, token):
             'username': 'test3',
             'email': 'test@test.com',
             'password': '1258963',
-        }, headers={'Authorization': f'bearer {token}'}
+        },
+        headers={'Authorization': f'bearer {token}'},
     )
 
     assert response.json() == {'detail': 'Not enough permission.'}

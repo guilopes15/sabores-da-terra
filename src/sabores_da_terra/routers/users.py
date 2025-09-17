@@ -34,7 +34,7 @@ async def create_user(user: UserSchema, session: T_Session):
     db_user = User(
         email=user.email,
         username=user.username,
-        password=get_password_hash(user.password)
+        password=get_password_hash(user.password),
     )
     session.add(db_user)
     await session.commit()
@@ -63,14 +63,11 @@ async def read_user_by_id(user_id: int, session: T_Session):
 
 @router.delete('/{user_id}', response_model=Message)
 async def delete_user(
-    user_id: int,
-    session: T_Session,
-    current_user: T_CurrentUser
+    user_id: int, session: T_Session, current_user: T_CurrentUser
 ):
     if current_user.id != user_id:
         raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
-            detail='Not enough permission.'
+            status_code=HTTPStatus.FORBIDDEN, detail='Not enough permission.'
         )
 
     await session.delete(current_user)
@@ -83,12 +80,11 @@ async def update_user(
     user_id: int,
     user: UserSchema,
     session: T_Session,
-    current_user: T_CurrentUser
+    current_user: T_CurrentUser,
 ):
     if current_user.id != user_id:
         raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
-            detail='Not enough permission.'
+            status_code=HTTPStatus.FORBIDDEN, detail='Not enough permission.'
         )
 
     try:

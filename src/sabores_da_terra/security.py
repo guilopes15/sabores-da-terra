@@ -28,21 +28,22 @@ def verify_password(plain_password, hashed_password):
 
 def create_access_token(data):
     to_encode = data.copy()
-    expire = datetime.now(
-        tz=ZoneInfo('UTC')) + timedelta(
-            minutes=Settings().ACESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(tz=ZoneInfo('UTC')) + timedelta(
+        minutes=Settings().ACESS_TOKEN_EXPIRE_MINUTES
+    )
 
     to_encode.update({'exp': expire})
     encode_jwt = encode(
-        to_encode, Settings().SECRET_KEY,
-        algorithm=Settings().ALGORITHM)
+        to_encode, Settings().SECRET_KEY, algorithm=Settings().ALGORITHM
+    )
 
     return encode_jwt
 
 
 async def get_current_user(
-        session: AsyncSession = Depends(get_session),
-        token: str = Depends(oauth2_scheme)):
+    session: AsyncSession = Depends(get_session),
+    token: str = Depends(oauth2_scheme),
+):
     credentials_exception = HTTPException(
         status_code=HTTPStatus.UNAUTHORIZED,
         detail='Could not validate credentials',
@@ -51,9 +52,8 @@ async def get_current_user(
 
     try:
         payload = decode(
-            token,
-            Settings().SECRET_KEY,
-            algorithms=[Settings().ALGORITHM])
+            token, Settings().SECRET_KEY, algorithms=[Settings().ALGORITHM]
+        )
         username = payload.get('sub')
 
         if not username:

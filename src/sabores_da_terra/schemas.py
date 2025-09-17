@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
@@ -15,6 +16,8 @@ class UserPublic(BaseModel):
     id: int
     username: str
     email: EmailStr
+    created_at: datetime
+    updated_at: datetime
 
 
 class UserList(BaseModel):
@@ -35,6 +38,8 @@ class ProductSchema(BaseModel):
 
 class ProductPublic(ProductSchema):
     id: int
+    created_at: datetime
+    updated_at: datetime
 
 
 class ProductList(BaseModel):
