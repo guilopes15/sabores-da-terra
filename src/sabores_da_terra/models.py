@@ -26,6 +26,9 @@ class User:
     created_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()
     )
+    updated_at: Mapped[datetime] = mapped_column(
+        init=False, server_default=func.now(), onupdate=func.now()
+    )
     orders: Mapped[list['Order']] = relationship(
         init=False, cascade='all, delete-orphan', lazy='selectin'
     )
