@@ -30,8 +30,10 @@ class User:
         init=False, server_default=func.now(), onupdate=func.now()
     )
     orders: Mapped[list['Order']] = relationship(
-        init=False, cascade='all, delete-orphan', lazy='selectin'
-    )
+        init=False,
+        cascade='all, delete-orphan',
+        # foreign_keys='Order.user_id',
+        lazy='select')
 
 
 @table_registry.mapped_as_dataclass
@@ -63,16 +65,14 @@ class Product:
 class Order:
     __tablename__ = 'orders'
     __table_args__ = (
-        CheckConstraint(
-            'total_amount > 0', name='check_total_amount_positive'
-        ),
+        CheckConstraint('total_amount >= 0', name='check_total_amount'),
     )
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     user_id: Mapped[int] = mapped_column(
         ForeignKey('users.id'), nullable=False
     )
-    total_amount: Mapped[Decimal] = mapped_column(nullable=False)
+    total_amount: Mapped[Decimal] = mapped_column(nullable=False, default=0)
     status: Mapped[OrderStatus] = mapped_column(
         nullable=False, default=OrderStatus.pending
     )
@@ -83,24 +83,23 @@ class Order:
         init=False, server_default=func.now(), onupdate=func.now()
     )
     items: Mapped[list['OrderItem']] = relationship(
-        init=False, cascade='all, delete-orphan'
+        init=False, cascade='all, delete-orphan', lazy='selectin'
     )
 
 
 @table_registry.mapped_as_dataclass
 class OrderItem:
     __tablename__ = 'order_items'
-    __table_args__ = (
-        CheckConstraint('quantity > 0', name='check_quantity_positive'),
-    )
+    __table_args__ = (CheckConstraint('quantity >= 0', name='check_quantity'),)
 
-    id: Mapped[int] = mapped_column(init=False, primary_key=True)
+    id: Mapped[int] = mapped_column(
+        init=False, primary_key=True, autoincrement=True
+    )
     order_id: Mapped[int] = mapped_column(
         ForeignKey('orders.id'), nullable=False
     )
     product_id: Mapped[int] = mapped_column(
         ForeignKey('products.id'), nullable=False
     )
-    quantity: Mapped[int] = mapped_column(nullable=False)
-    price: Mapped[Decimal] = mapped_column(nullable=False)
-    product: Mapped['Product'] = relationship(init=False)
+    quantity: Mapped[int] = mapped_column(nullable=False, default=0)
+    price: Mapped[Decimal] = mapped_column(nullable=False, default=0)
