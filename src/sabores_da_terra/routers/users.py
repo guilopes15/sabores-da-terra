@@ -5,9 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.sabores_da_terra.database import get_session
-from src.sabores_da_terra.models import User
+from src.sabores_da_terra.models import Order, User
 from src.sabores_da_terra.schemas import (
     Message,
     UserList,
@@ -26,6 +27,7 @@ async def create_user(user: UserSchema, session: T_Session):
     db_user = await session.scalar(
         select(User).where(User.email == user.email)
     )
+
     if db_user:
         raise HTTPException(
             status_code=HTTPStatus.CONFLICT, detail='Email already exists.'
@@ -36,22 +38,39 @@ async def create_user(user: UserSchema, session: T_Session):
         username=user.username,
         password=get_password_hash(user.password),
     )
+
     session.add(db_user)
     await session.commit()
-    await session.refresh(db_user)
 
-    return db_user
+    new_user = await session.scalar(
+        select(User)
+        .where(User.id == db_user.id)
+        .options(
+            selectinload(User.orders).selectinload(Order.items)
+        )
+    )
+
+    return new_user
 
 
 @router.get('/', response_model=UserList)
 async def read_users(session: T_Session):
-    db_users = await session.scalars(select(User))
-    return {'users': db_users.all()}
+    users = await session.scalars(
+        select(User).options(
+            selectinload(User.orders).selectinload(Order.items)
+        )
+    )
+
+    return {'users': users.all()}
 
 
 @router.get('/{user_id}', response_model=UserPublic)
 async def read_user_by_id(user_id: int, session: T_Session):
-    db_user = await session.scalar(select(User).where(User.id == user_id))
+    db_user = await session.scalar(
+        select(User).where(User.id == user_id).options(
+            selectinload(User.orders).selectinload(Order.items)
+        )
+    )
 
     if not db_user:
         raise HTTPException(
@@ -92,11 +111,18 @@ async def update_user(
         current_user.email = user.email
         current_user.password = get_password_hash(user.password)
         await session.commit()
-        await session.refresh(current_user)
+
+        refreshed_user = await session.scalar(
+            select(User)
+            .where(User.id == user_id)
+            .options(
+                selectinload(User.orders).selectinload(Order.items)
+            )
+        )
 
     except IntegrityError:
         raise HTTPException(
             status_code=HTTPStatus.CONFLICT, detail='Email already exists.'
         )
 
-    return current_user
+    return refreshed_user

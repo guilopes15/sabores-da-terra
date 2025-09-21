@@ -1,5 +1,3 @@
-from dataclasses import asdict
-
 import pytest
 from fastapi import HTTPException
 from jwt import decode, encode
@@ -35,7 +33,7 @@ async def test_get_current_user(session, user):
     data = {'sub': user.email}
     token = encode(data, Settings().SECRET_KEY, algorithm=Settings().ALGORITHM)
     current_user = await get_current_user(session, token)
-    assert asdict(current_user)
+    assert current_user
 
 
 @pytest.mark.asyncio

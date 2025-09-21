@@ -10,7 +10,13 @@ from testcontainers.postgres import PostgresContainer
 
 from src.sabores_da_terra.app import app
 from src.sabores_da_terra.database import get_session
-from src.sabores_da_terra.models import Product, User, table_registry
+from src.sabores_da_terra.models import (
+    Order,
+    OrderItem,
+    Product,
+    User,
+    table_registry,
+)
 from src.sabores_da_terra.security import get_password_hash
 
 
@@ -104,23 +110,59 @@ def token(client, user):
 
 
 @contextmanager
-def _mock_db_time(*, model, time=datetime(2025, 9, 17)):
+def _mock_db_time(
+    model, time=datetime(2025, 9, 17), event_name='before_insert'
+):
     def fake_time_hook(mapper, connection, target):
         if hasattr(target, 'created_at'):
             target.created_at = time
         if hasattr(target, 'updated_at'):
             target.updated_at = time
 
-    event.listen(model, 'before_insert', fake_time_hook)
-    event.listen(model, 'before_update', fake_time_hook)
-
+    event.listen(model, event_name, fake_time_hook)
     yield time
-
-    # Remove both event listeners
-    event.remove(model, 'before_insert', fake_time_hook)
-    event.remove(model, 'before_update', fake_time_hook)
+    event.remove(model, event_name, fake_time_hook)
 
 
 @pytest.fixture
 def mock_db_time():
     return _mock_db_time
+
+
+@pytest_asyncio.fixture
+async def order(session, mock_db_time, product, user):
+    with mock_db_time(model=Order, event_name='before_update'):
+        db_order = Order(user_id=user.id, total_amount=0)
+        session.add(db_order)
+        await session.flush()
+        order_items = OrderItem(
+            order_id=db_order.id,
+            product_id=product.id,
+            quantity=1,
+            price=product.price,
+        )
+        session.add(order_items)
+        db_order.total_amount = product.price * order_items.quantity
+        await session.commit()
+        await session.refresh(db_order)
+        return db_order
+
+
+@pytest_asyncio.fixture
+async def other_order(session, mock_db_time, product, user):
+    with mock_db_time(model=Order, event_name='before_update'):
+        db_order = Order(user_id=user.id, total_amount=0)
+        session.add(db_order)
+        await session.flush()
+        order_items = OrderItem(
+            order_id=db_order.id,
+            product_id=product.id,
+            quantity=1,
+            price=product.price,
+        )
+        session.add(order_items)
+        db_order.total_amount = product.price * order_items.quantity
+        db_order.status = 'paid'
+        await session.commit()
+        await session.refresh(db_order)
+        return db_order
