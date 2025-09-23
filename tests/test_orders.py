@@ -95,14 +95,12 @@ def test_create_order_already_exists(client, token, product, order):
     time = datetime(2025, 9, 17)
 
     response = client.post(
-            '/orders',
-            json={
-                'items': [
-                    {'product_id': product.id, 'quantity': item_quantity}
-                ]
-            },
-            headers={'Authorization': f'bearer {token}'},
-        )
+        '/orders',
+        json={
+            'items': [{'product_id': product.id, 'quantity': item_quantity}]
+        },
+        headers={'Authorization': f'bearer {token}'},
+    )
 
     assert response.json() == {
         'id': 1,
@@ -147,14 +145,13 @@ def test_read_order_by_id(client, order):
 
 def test_read_order_by_id_not_found(client):
     response = client.get('/orders/99')
-    assert response.json() == {
-        'detail': 'Order does not exists.'
-    }
+    assert response.json() == {'detail': 'Order does not exists.'}
 
 
 def test_read_user_order(client, token, order):
-    response = client.get('/orders/my-orders',
-                          headers={'Authorization': f'bearer {token}'})
+    response = client.get(
+        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+    )
     time = datetime(2025, 9, 17)
     assert response.json() == {
         'id': 1,
@@ -176,8 +173,9 @@ def test_read_user_order(client, token, order):
 
 
 def test_read_user_order_not_pending(client, token, other_order):
-    response = client.get('/orders/my-orders',
-                          headers={'Authorization': f'bearer {token}'})
+    response = client.get(
+        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+    )
 
     assert response.json() == {
         'detail': 'Order does not exists or not pending.'
@@ -185,25 +183,26 @@ def test_read_user_order_not_pending(client, token, other_order):
 
 
 def test_read_user_order_not_found(client, token):
-    response = client.get('/orders/my-orders',
-                          headers={'Authorization': f'bearer {token}'})
+    response = client.get(
+        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+    )
     assert response.json() == {
         'detail': 'Order does not exists or not pending.'
     }
 
 
 def test_delete_order(client, token, order):
-    response = client.delete('/orders/my-orders',
-                             headers={'Authorization': f'bearer {token}'})
+    response = client.delete(
+        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+    )
 
-    assert response.json() == {
-        'message': 'Order deleted.'
-    }
+    assert response.json() == {'message': 'Order deleted.'}
 
 
 def test_delete_order_not_found(client, token):
-    response = client.delete('/orders/my-orders',
-                             headers={'Authorization': f'bearer {token}'})
+    response = client.delete(
+        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+    )
 
     assert response.json() == {
         'detail': 'Order does not exists or not pending.'
@@ -211,8 +210,9 @@ def test_delete_order_not_found(client, token):
 
 
 def test_delete_order_not_pending(client, token, other_order):
-    response = client.delete('/orders/my-orders',
-                             headers={'Authorization': f'bearer {token}'})
+    response = client.delete(
+        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+    )
 
     assert response.json() == {
         'detail': 'Order does not exists or not pending.'
@@ -220,23 +220,22 @@ def test_delete_order_not_pending(client, token, other_order):
 
 
 def test_update_orders(client, order, token, product):
-
     item_quantity = 3
 
     response = client.put(
-            '/orders/my-orders',
-            json={
-                'items': [
-                    {'product_id': product.id, 'quantity': item_quantity}
-                ]
-            },
-            headers={'Authorization': f'bearer {token}'},
-        )
+        '/orders/my-orders',
+        json={
+            'items': [{'product_id': product.id, 'quantity': item_quantity}]
+        },
+        headers={'Authorization': f'bearer {token}'},
+    )
 
     response_data = response.json()
 
-    assert response_data['total_amount'] == (
-        item_quantity * product.price).to_eng_string()
+    assert (
+        response_data['total_amount']
+        == (item_quantity * product.price).to_eng_string()
+    )
     assert response_data['items'][0]['quantity'] == item_quantity
 
 
@@ -244,14 +243,10 @@ def test_update_order_not_found(client, token):
     item_quantity = 5
 
     response = client.put(
-            '/orders/my-orders',
-            json={
-                'items': [
-                    {'product_id': 1, 'quantity': item_quantity}
-                ]
-            },
-            headers={'Authorization': f'bearer {token}'},
-        )
+        '/orders/my-orders',
+        json={'items': [{'product_id': 1, 'quantity': item_quantity}]},
+        headers={'Authorization': f'bearer {token}'},
+    )
 
     assert response.json() == {
         'detail': 'Order does not exists or not pending.'
@@ -262,14 +257,10 @@ def test_update_order_not_pending(client, token, other_order):
     item_quantity = 4
 
     response = client.put(
-            '/orders/my-orders',
-            json={
-                'items': [
-                    {'product_id': 1, 'quantity': item_quantity}
-                ]
-            },
-            headers={'Authorization': f'bearer {token}'},
-        )
+        '/orders/my-orders',
+        json={'items': [{'product_id': 1, 'quantity': item_quantity}]},
+        headers={'Authorization': f'bearer {token}'},
+    )
 
     assert response.json() == {
         'detail': 'Order does not exists or not pending.'
@@ -280,73 +271,59 @@ def test_updated_order_product_not_found(client, token, order):
     item_quantity = 4
 
     response = client.put(
-            '/orders/my-orders',
-            json={
-                'items': [
-                    {'product_id': 85, 'quantity': item_quantity}
-                ]
-            },
-            headers={'Authorization': f'bearer {token}'},
-        )
+        '/orders/my-orders',
+        json={'items': [{'product_id': 85, 'quantity': item_quantity}]},
+        headers={'Authorization': f'bearer {token}'},
+    )
 
-    assert response.json() == {
-        'detail': 'Product 85 not found.'
-
-    }
+    assert response.json() == {'detail': 'Product 85 not found.'}
 
 
 def test_update_order_insufficient_stock(client, token, order):
     item_quantity = 50
 
     response = client.put(
-            '/orders/my-orders',
-            json={
-                'items': [
-                    {'product_id': 1, 'quantity': item_quantity}
-                ]
-            },
-            headers={'Authorization': f'bearer {token}'},
-        )
+        '/orders/my-orders',
+        json={'items': [{'product_id': 1, 'quantity': item_quantity}]},
+        headers={'Authorization': f'bearer {token}'},
+    )
 
-    assert response.json() == {
-        'detail': 'insufficient stock for product_id 1'
-    }
+    assert response.json() == {'detail': 'insufficient stock for product_id 1'}
 
 
 def test_update_order_remove_item_quantity_0(client, token, order):
     item_quantity = 0
 
     response = client.put(
-            '/orders/my-orders',
-            json={
-                'items': [
-                    {'product_id': 1, 'quantity': item_quantity}
-                ]
-            },
-            headers={'Authorization': f'bearer {token}'},
-        )
+        '/orders/my-orders',
+        json={'items': [{'product_id': 1, 'quantity': item_quantity}]},
+        headers={'Authorization': f'bearer {token}'},
+    )
 
     assert response.json()['items'] == []
 
 
 def test_update_order_add_new_item(
-        client, token, other_product, order, product
+    client, token, other_product, order, product
 ):
     item_quantity = 9
     expected_items = 2
     response = client.put(
-            '/orders/my-orders',
-            json={
-                'items': [
-                    {'product_id': other_product.id, 'quantity': item_quantity}
-                ]
-            },
-            headers={'Authorization': f'bearer {token}'},
-        )
+        '/orders/my-orders',
+        json={
+            'items': [
+                {'product_id': other_product.id, 'quantity': item_quantity}
+            ]
+        },
+        headers={'Authorization': f'bearer {token}'},
+    )
 
     response_data = response.json()
 
-    assert response_data['total_amount'] == (
-        product.price + (other_product.price * item_quantity)
+    assert (
+        response_data['total_amount']
+        == (
+            product.price + (other_product.price * item_quantity)
         ).to_eng_string()
+    )
     assert len(response_data['items']) == expected_items

@@ -19,7 +19,7 @@ def test_create_user(client, mock_db_time):
         'id': 1,
         'created_at': time.isoformat(),
         'updated_at': time.isoformat(),
-        'orders': []
+        'orders': [],
     }
 
 
@@ -42,14 +42,14 @@ def test_read_users_with_users(client, user):
 
     assert response.json() == {
         'users': [
-                    {
-                        'username': 'test',
-                        'email': 'test@test.com',
-                        'id': 1,
-                        'created_at': time.isoformat(),
-                        'updated_at': time.isoformat(),
-                        'orders': []
-                    }
+            {
+                'username': 'test',
+                'email': 'test@test.com',
+                'id': 1,
+                'created_at': time.isoformat(),
+                'updated_at': time.isoformat(),
+                'orders': [],
+            }
         ]
     }
 
@@ -60,35 +60,34 @@ def test_read_users_with_order(client, user, product, order):
 
     assert response.json() == {
         'users': [
-        {
-            'username': 'test',
-            'email': 'test@test.com',
-            'id': 1,
-            'created_at': time.isoformat(),
-            'updated_at': time.isoformat(),
-            'orders': [
-                {
-                    'id': 1,
-                    'user_id': user.id,
-                    'total_amount': product.price.to_eng_string(),
-                    'status': 'pending',
-                    'created_at': time.isoformat(),
-                    'updated_at': time.isoformat(),
-                    'items': [
-                                {
-                                    'id': 1,
-                                    'order_id': 1,
-                                    'product_id': product.id,
-                                    'quantity': 1,
-                                    'price': product.price.to_eng_string(),
-                                }
-                    ]
-                }
-            ],
-        }
-    ]
-}
-
+            {
+                'username': 'test',
+                'email': 'test@test.com',
+                'id': 1,
+                'created_at': time.isoformat(),
+                'updated_at': time.isoformat(),
+                'orders': [
+                    {
+                        'id': 1,
+                        'user_id': user.id,
+                        'total_amount': product.price.to_eng_string(),
+                        'status': 'pending',
+                        'created_at': time.isoformat(),
+                        'updated_at': time.isoformat(),
+                        'items': [
+                            {
+                                'id': 1,
+                                'order_id': 1,
+                                'product_id': product.id,
+                                'quantity': 1,
+                                'price': product.price.to_eng_string(),
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
 
 
 def test_read_user_by_id(client, user):
@@ -100,7 +99,7 @@ def test_read_user_by_id(client, user):
         'id': 1,
         'created_at': user.created_at.isoformat(),
         'updated_at': user.updated_at.isoformat(),
-        'orders': []
+        'orders': [],
     }
 
 
@@ -140,7 +139,7 @@ def test_update_user(client, user, token):
         'id': 1,
         'created_at': user.created_at.isoformat(),
         'updated_at': user.updated_at.isoformat(),
-        'orders': []
+        'orders': [],
     }
 
 
