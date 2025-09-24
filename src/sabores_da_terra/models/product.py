@@ -2,10 +2,12 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy import CheckConstraint, func
+from sqlalchemy import CheckConstraint, func, event, delete, select
 from sqlalchemy.orm import Mapped, mapped_column
-
+from sqlalchemy.exc import OperationalError, IntegrityError
 from .model_registry import table_registry
+from .order_item import OrderItem
+from .order import Order
 
 
 @table_registry.mapped_as_dataclass
@@ -31,3 +33,17 @@ class Product:
     updated_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now(), onupdate=func.now()
     )
+
+
+@event.listens_for(Product, 'before_delete')
+def remove_product_from_pending_orders(mapper, connection, target):
+    query = delete(OrderItem).where(
+        (OrderItem.product_id == target.id) & (OrderItem.order_id.in_(
+            select(Order.id).where(Order.status == 'pending')
+            )
+        )
+    )
+    
+    connection.execute(query)
+
+   

@@ -1,4 +1,10 @@
 from src.sabores_da_terra.models import Product
+from sqlalchemy.exc import OperationalError
+import pytest
+from src.sabores_da_terra.controllers.product_controller import ProductController
+from fastapi import HTTPException
+from sqlalchemy import select
+from src.sabores_da_terra.models import Order
 
 
 def test_create_product(client, mock_db_time):
@@ -82,6 +88,29 @@ def test_delete_product(client, product):
 def test_delete_product_not_found(client):
     response = client.delete('/products/99999')
     assert response.json() == {'detail': 'Product does not exists.'}
+
+
+@pytest.mark.asyncio
+async def test_delete_product_database_error(product, monkeypatch, session):
+    
+    async def fake_delete(obj):
+        raise OperationalError("force", "me", "test")
+
+    monkeypatch.setattr(session, "delete", fake_delete)
+    
+    with pytest.raises(HTTPException) as ex:
+        await ProductController.delete(product.id, session)
+
+    assert 'Database error.' in ex.value.detail
+
+
+@pytest.mark.asyncio        
+async def test_remove_product_from_pending_orders(client, order, product, session):
+    client.delete(f'/products/{product.id}')
+
+    db_order = await session.scalar(select(Order))
+    await session.refresh(db_order)
+    assert db_order.items == []
 
 
 def test_patch_product(client, product):

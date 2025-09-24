@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, OperationalError
 
 from src.sabores_da_terra.models import Product
 
@@ -76,8 +76,15 @@ class ProductController():
                 status_code=HTTPStatus.NOT_FOUND,
                 detail='Product does not exists.'
             )
-
-        await session.delete(db_product)
-        await session.commit()
+        
+        try:
+            await session.delete(db_product)
+            await session.commit()
+        
+        except (OperationalError, IntegrityError):
+            raise HTTPException(
+                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                detail='Database error.'
+            )
 
         return {'message': 'Product deleted'}
