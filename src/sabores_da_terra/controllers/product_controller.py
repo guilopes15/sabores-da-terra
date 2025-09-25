@@ -2,20 +2,20 @@ from http import HTTPStatus
 
 from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError, OperationalError
+from sqlalchemy.exc import IntegrityError
 
 from src.sabores_da_terra.models import Product
 
 
-class ProductController():
+class ProductController:
     async def create(product, session):
         db_product = await session.scalar(
-        select(Product).where(Product.name == product.name)
+            select(Product).where(Product.name == product.name)
         )
         if db_product:
             raise HTTPException(
                 status_code=HTTPStatus.CONFLICT,
-                detail='Product already exists.'
+                detail='Product already exists.',
             )
 
         db_product = Product(**product.model_dump())
@@ -36,19 +36,19 @@ class ProductController():
         if not db_product:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
-                detail='Product does not exists.'
+                detail='Product does not exists.',
             )
 
         return db_product
 
     async def patch(product_id, product, session):
         db_product = await session.scalar(
-        select(Product).where(Product.id == product_id)
-    )
+            select(Product).where(Product.id == product_id)
+        )
         if not db_product:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
-                detail='Product does not exists.'
+                detail='Product does not exists.',
             )
 
         try:
@@ -74,17 +74,10 @@ class ProductController():
         if not db_product:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
-                detail='Product does not exists.'
+                detail='Product does not exists.',
             )
-        
-        try:
-            await session.delete(db_product)
-            await session.commit()
-        
-        except (OperationalError, IntegrityError):
-            raise HTTPException(
-                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                detail='Database error.'
-            )
+
+        db_product.is_active = False
+        await session.commit()
 
         return {'message': 'Product deleted'}

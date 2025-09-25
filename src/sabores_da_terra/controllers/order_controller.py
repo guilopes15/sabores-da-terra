@@ -6,7 +6,7 @@ from sqlalchemy import select
 from src.sabores_da_terra.models import Order, OrderItem, Product
 
 
-class OrderController():
+class OrderController:
     async def create(order_data, current_user, session):
         db_order = await session.scalar(
             select(Order).where(Order.user_id == current_user.id)
@@ -23,7 +23,9 @@ class OrderController():
 
         for item in order_data.items:
             product = await session.scalar(
-                select(Product).where(Product.id == item.product_id)
+                select(Product).where(
+                    (Product.id == item.product_id) & Product.is_active
+                )
             )
             if not product:
                 raise HTTPException(
@@ -32,8 +34,8 @@ class OrderController():
                 )
             if product.stock_quantity < item.quantity:
                 raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST,
-                detail=f'insufficient stock for product {item.product_id}',
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    detail=f'insufficient stock for product {item.product_id}',
                 )
 
             if item.quantity > 0:
@@ -57,7 +59,8 @@ class OrderController():
     async def read(current_user, session):
         db_order = await session.scalar(
             select(Order).where(
-            (Order.user_id == current_user.id) & (Order.status == 'pending')
+                (Order.user_id == current_user.id)
+                & (Order.status == 'pending')
             )
         )
 
@@ -76,7 +79,7 @@ class OrderController():
         if not db_order:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
-                detail='Order does not exists.'
+                detail='Order does not exists.',
             )
 
         return db_order
@@ -84,7 +87,8 @@ class OrderController():
     async def update(order_data, current_user, session):
         db_order = await session.scalar(
             select(Order).where(
-            (Order.user_id == current_user.id) & (Order.status == 'pending')
+                (Order.user_id == current_user.id)
+                & (Order.status == 'pending')
             )
         )
 
@@ -96,7 +100,9 @@ class OrderController():
 
         for item in order_data.items:
             product = await session.scalar(
-                select(Product).where(Product.id == item.product_id)
+                select(Product).where(
+                    (Product.id == item.product_id) & Product.is_active
+                )
             )
 
             if not product:
@@ -107,13 +113,14 @@ class OrderController():
 
             if product.stock_quantity < item.quantity:
                 raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST,
-                detail=f'insufficient stock for product_id {item.product_id}',
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    detail=f'insufficient stock for product_id {item.product_id}',
                 )
 
             order_item = next(
-                filter(lambda x:
-                       x.product_id == item.product_id, db_order.items),
+                filter(
+                    lambda x: x.product_id == item.product_id, db_order.items
+                ),
                 None,
             )
 
@@ -148,7 +155,8 @@ class OrderController():
     async def delete(current_user, session):
         db_order = await session.scalar(
             select(Order).where(
-            (Order.user_id == current_user.id) & (Order.status == 'pending')
+                (Order.user_id == current_user.id)
+                & (Order.status == 'pending')
             )
         )
 

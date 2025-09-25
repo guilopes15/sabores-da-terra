@@ -9,8 +9,7 @@ from src.sabores_da_terra.models import Order, User
 from src.sabores_da_terra.security import get_password_hash
 
 
-class UserControler():
-
+class UserControler:
     async def create(user, session):
         db_user = await session.scalar(
             select(User).where(User.email == user.email)
@@ -18,8 +17,7 @@ class UserControler():
 
         if db_user:
             raise HTTPException(
-                status_code=HTTPStatus.CONFLICT,
-                detail='Email already exists.'
+                status_code=HTTPStatus.CONFLICT, detail='Email already exists.'
             )
 
         db_user = User(
@@ -30,10 +28,7 @@ class UserControler():
 
         session.add(db_user)
         await session.commit()
-        await session.refresh(
-            db_user,
-            attribute_names=['orders']
-        )
+        await session.refresh(db_user, attribute_names=['orders'])
 
         return db_user
 
@@ -48,15 +43,15 @@ class UserControler():
 
     async def read_by_id(user_id, session):
         db_user = await session.scalar(
-        select(User)
-        .where(User.id == user_id)
-        .options(selectinload(User.orders).selectinload(Order.items))
+            select(User)
+            .where(User.id == user_id)
+            .options(selectinload(User.orders).selectinload(Order.items))
         )
 
         if not db_user:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
-                detail='User does not exists.'
+                detail='User does not exists.',
             )
 
         return db_user
@@ -65,7 +60,7 @@ class UserControler():
         if current_user.id != user_id:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
-                detail='Not enough permission.'
+                detail='Not enough permission.',
             )
 
         try:
@@ -82,8 +77,7 @@ class UserControler():
 
         except IntegrityError:
             raise HTTPException(
-                status_code=HTTPStatus.CONFLICT,
-                detail='Email already exists.'
+                status_code=HTTPStatus.CONFLICT, detail='Email already exists.'
             )
 
         return refreshed_user
@@ -92,7 +86,7 @@ class UserControler():
         if current_user.id != user_id:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
-                detail='Not enough permission.'
+                detail='Not enough permission.',
             )
 
         await session.delete(current_user)

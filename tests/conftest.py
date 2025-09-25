@@ -97,6 +97,17 @@ async def other_product(session, mock_db_time):
         return db_product
 
 
+@pytest_asyncio.fixture
+async def inactive_product(session, mock_db_time):
+    with mock_db_time(model=Product, time=datetime(2025, 9, 17)):
+        db_product = Product(name='maca', price=25.85, stock_quantity=12)
+        db_product.is_active = False
+        session.add(db_product)
+        await session.commit()
+        await session.refresh(db_product)
+        return db_product
+
+
 @pytest.fixture
 def token(client, user):
     response = client.post(
