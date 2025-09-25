@@ -8,10 +8,10 @@ from src.sabores_da_terra.controllers.user_controler import UserControler
 from src.sabores_da_terra.database import get_session
 from src.sabores_da_terra.models import User
 from src.sabores_da_terra.schemas import (
-   Message,
-   UserList,
-   UserPublic,
-   UserSchema,
+    Message,
+    UserList,
+    UserPublic,
+    UserSchema,
 )
 from src.sabores_da_terra.security import get_current_user
 

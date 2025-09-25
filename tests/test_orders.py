@@ -48,6 +48,24 @@ def test_create_order_without_product(client, token):
     assert response.json() == {'detail': 'Product 99 not found.'}
 
 
+def test_create_order_inactive_product(client, token, inactive_product):
+    item_quantity = 5
+
+    response = client.post(
+        '/orders',
+        json={
+            'items': [
+                {'product_id': inactive_product.id, 'quantity': item_quantity}
+            ]
+        },
+        headers={'Authorization': f'bearer {token}'},
+    )
+
+    assert response.json() == {
+        'detail': f'Product {inactive_product.id} not found.'
+    }
+
+
 def test_create_order_insufficient_stock(client, token, product):
     response = client.post(
         '/orders',
@@ -277,6 +295,26 @@ def test_updated_order_product_not_found(client, token, order):
     )
 
     assert response.json() == {'detail': 'Product 85 not found.'}
+
+
+def test_updated_order_inactive_product(
+    client, token, order, inactive_product
+):
+    item_quantity = 4
+
+    response = client.put(
+        '/orders/my-orders',
+        json={
+            'items': [
+                {'product_id': inactive_product.id, 'quantity': item_quantity}
+            ]
+        },
+        headers={'Authorization': f'bearer {token}'},
+    )
+
+    assert response.json() == {
+        'detail': f'Product {inactive_product.id} not found.'
+    }
 
 
 def test_update_order_insufficient_stock(client, token, order):
