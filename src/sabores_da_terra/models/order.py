@@ -6,7 +6,7 @@ from sqlalchemy import CheckConstraint, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .model_registry import table_registry
-from .order_item import OrderItem
+#from .order_item import OrderItem
 
 
 class OrderStatus(str, Enum):

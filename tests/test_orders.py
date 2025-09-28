@@ -365,3 +365,7 @@ def test_update_order_add_new_item(
         ).to_eng_string()
     )
     assert len(response_data['items']) == expected_items
+
+
+# TODO: Remove product from pending order update total amount
+# TODO: Test total amount is zero from empty items

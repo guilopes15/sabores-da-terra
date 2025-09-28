@@ -4,7 +4,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .model_registry import table_registry
-from .order import Order
+#from .order import Order
 
 
 @table_registry.mapped_as_dataclass
