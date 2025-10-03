@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy import CheckConstraint, delete, event, func, select
+from sqlalchemy import CheckConstraint, delete, event, func, select, update
 from sqlalchemy.orm import Mapped, attributes, mapped_column
 
 from .model_registry import table_registry
@@ -49,6 +49,22 @@ def remove_product_from_pending_orders(mapper, connection, target):
             & (
                 OrderItem.order_id.in_(
                     select(Order.id).where(Order.status == 'pending')
+                )
+            )
+        )
+
+        connection.execute(query)
+
+        # Atualiza o total_amount dos pedidos 
+        query = (
+            update(Order)
+            .where(Order.status == 'pending')
+            .values(
+                total_amount=(
+                    select(func.coalesce(
+                        func.sum(OrderItem.quantity * OrderItem.price), 0))
+                    .where(OrderItem.order_id == Order.id)
+                    .scalar_subquery()
                 )
             )
         )

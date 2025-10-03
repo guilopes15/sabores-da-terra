@@ -18,6 +18,8 @@ from src.sabores_da_terra.models import (
     table_registry,
 )
 from src.sabores_da_terra.security import get_password_hash
+import json
+from unittest.mock import patch
 
 
 @pytest.fixture
@@ -33,7 +35,7 @@ def client(session):
 
 @pytest.fixture(scope='session')
 def engine():
-    with PostgresContainer('postgres:latest', driver='psycopg') as postgres:
+    with PostgresContainer('postgres:17', driver='psycopg') as postgres:
         yield create_async_engine(postgres.get_connection_url())
 
 
@@ -68,12 +70,16 @@ async def user(session, mock_db_time):
 @pytest_asyncio.fixture
 async def other_user(session, mock_db_time):
     with mock_db_time(model=User, time=datetime(2025, 9, 17)):
+        password = '123456'
         db_user = User(
-            username='test', email='other@test.com', password='1234'
+            username='test123', 
+            email='other@test.com', 
+            password=get_password_hash(password)
         )
         session.add(db_user)
         await session.commit()
         await session.refresh(db_user)
+        db_user.clean_password = password
         return db_user
 
 
@@ -177,3 +183,35 @@ async def other_order(session, mock_db_time, product, user):
         await session.commit()
         await session.refresh(db_order)
         return db_order
+
+
+@contextmanager
+def _mock_stripe_signature_verification(
+    order_id=1, 
+    status='paid', 
+    checkout_type="checkout.session.completed"
+):
+    fake_event = {
+        "type": checkout_type,
+        "data": {
+            "object": {
+                "payment_status": status,
+                "metadata": {"order_id": order_id},
+            }
+        },
+    }
+
+    with patch("stripe.Webhook.construct_event", return_value=fake_event):
+        yield
+
+
+@pytest.fixture
+def mock_stripe_signature_verification(order):
+    return _mock_stripe_signature_verification
+
+
+@pytest.fixture
+def webhook_payload():
+    with open('tests/assets/hook_payload.txt', 'r') as _file:
+        data = json.dumps(_file.read())
+    return data

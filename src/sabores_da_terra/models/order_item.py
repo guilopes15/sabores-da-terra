@@ -1,9 +1,13 @@
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from sqlalchemy import CheckConstraint, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .model_registry import table_registry
+
+if TYPE_CHECKING:
+    from .product import Product
 
 
 @table_registry.mapped_as_dataclass
@@ -22,3 +26,4 @@ class OrderItem:
     )
     quantity: Mapped[int] = mapped_column(nullable=False, default=0)
     price: Mapped[Decimal] = mapped_column(nullable=False, default=0)
+    product: Mapped["Product"] = relationship(init=False)
