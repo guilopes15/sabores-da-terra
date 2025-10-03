@@ -33,7 +33,6 @@ class UserControler:
 
         return db_user
 
-
     @staticmethod
     async def read_all(session):
         users = await session.scalars(
@@ -43,7 +42,6 @@ class UserControler:
         )
 
         return {'users': users.all()}
-
 
     @staticmethod
     async def read_by_id(user_id, session):
@@ -60,7 +58,6 @@ class UserControler:
             )
 
         return db_user
-
 
     @staticmethod
     async def update(user_id, user, session, current_user):
@@ -88,8 +85,7 @@ class UserControler:
             )
 
         return refreshed_user
-    
-    
+
     @staticmethod
     async def delete(user_id, session, current_user):
         if current_user.id != user_id:

@@ -33,9 +33,9 @@ def test_checkout_order_wrong_user(client, token, order, other_user):
             'password': other_user.clean_password,
         },
     )
-    
+
     token = response.json()['access_token']
-    
+
     response = client.post(
         f'/payment/checkout/{order.id}',
         headers={'Authorization': f'bearer {token}'}
@@ -52,9 +52,9 @@ def test_checkout_order_zero_amount(client, token):
             },
             headers={'Authorization': f'bearer {token}'},
         )
-    
+
     order_id = response.json()['id']
-    
+
     response = client.post(
         f'/payment/checkout/{order_id}',
         headers={'Authorization': f'bearer {token}'}
@@ -64,10 +64,10 @@ def test_checkout_order_zero_amount(client, token):
 
 
 def test_webhook(
-        client, 
+        client,
         mock_stripe_signature_verification,
         webhook_payload
-):   
+):
     with mock_stripe_signature_verification(order_id=1):
         response = client.post(
             "/payment/webhook",
@@ -78,20 +78,20 @@ def test_webhook(
         assert response.json() == {'message': 'Order processed successfully.'}
 
 
-def test_webhook_invalid_signature(client, webhook_payload): 
+def test_webhook_invalid_signature(client, webhook_payload):
     response = client.post(
-        '/payment/webhook', 
-        headers={'stripe-signature': 'invalid'}, 
+        '/payment/webhook',
+        headers={'stripe-signature': 'invalid'},
         json=webhook_payload
-    ) 
+    )
     assert response.json() == {'detail': "Invalid signature"}
 
 
 def test_webhook_order_not_found(
-        client, 
+        client,
         mock_stripe_signature_verification,
         webhook_payload
-):   
+):
     with mock_stripe_signature_verification(order_id=None):
         response = client.post(
             "/payment/webhook",
@@ -99,16 +99,15 @@ def test_webhook_order_not_found(
             json=webhook_payload,
         )
 
-
     assert response.json() == {'message': 'No orders processed.'}
 
 
 def test_webhook_order_not_paid(
-        client, 
+        client,
         mock_stripe_signature_verification,
         webhook_payload
         ):
-    
+
     with mock_stripe_signature_verification(order_id=1, status='pending'):
         response = client.post(
             "/payment/webhook",
@@ -120,17 +119,16 @@ def test_webhook_order_not_paid(
 
 
 def test_webhook_checkout_not_completed(
-        client, 
+        client,
         mock_stripe_signature_verification,
         webhook_payload
         ):
- 
+
     with mock_stripe_signature_verification(checkout_type='uncompleted'):
         response = client.post(
             "/payment/webhook",
             headers={"stripe-signature": "fake"},
             json=webhook_payload,
         )
-
 
     assert response.json() == {'message': 'No orders processed.'}

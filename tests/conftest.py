@@ -1,5 +1,7 @@
+import json
 from contextlib import contextmanager
 from datetime import datetime
+from unittest.mock import patch
 
 import pytest
 import pytest_asyncio
@@ -18,8 +20,6 @@ from src.sabores_da_terra.models import (
     table_registry,
 )
 from src.sabores_da_terra.security import get_password_hash
-import json
-from unittest.mock import patch
 
 
 @pytest.fixture
@@ -72,8 +72,8 @@ async def other_user(session, mock_db_time):
     with mock_db_time(model=User, time=datetime(2025, 9, 17)):
         password = '123456'
         db_user = User(
-            username='test123', 
-            email='other@test.com', 
+            username='test123',
+            email='other@test.com',
             password=get_password_hash(password)
         )
         session.add(db_user)
@@ -187,8 +187,8 @@ async def other_order(session, mock_db_time, product, user):
 
 @contextmanager
 def _mock_stripe_signature_verification(
-    order_id=1, 
-    status='paid', 
+    order_id=1,
+    status='paid',
     checkout_type="checkout.session.completed"
 ):
     fake_event = {
@@ -212,6 +212,6 @@ def mock_stripe_signature_verification(order):
 
 @pytest.fixture
 def webhook_payload():
-    with open('tests/assets/hook_payload.txt', 'r') as _file:
+    with open('tests/assets/hook_payload.txt', 'r', encoding='utf-8') as _file:
         data = json.dumps(_file.read())
     return data

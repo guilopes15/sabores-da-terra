@@ -56,8 +56,7 @@ class OrderController:
         await session.refresh(db_order)
 
         return db_order
-    
-    
+
     @staticmethod
     async def read(current_user, session):
         db_order = await session.scalar(
@@ -74,8 +73,7 @@ class OrderController:
             )
 
         return db_order
-    
-    
+
     @staticmethod
     async def read_by_id(order_id, session):
         db_order = await session.scalar(
@@ -88,8 +86,7 @@ class OrderController:
             )
 
         return db_order
-    
-    
+
     @staticmethod
     async def update(order_data, current_user, session):
         db_order = await session.scalar(
@@ -157,8 +154,7 @@ class OrderController:
         await session.refresh(db_order)
 
         return db_order
-    
-    
+
     @staticmethod
     async def delete(current_user, session):
         db_order = await session.scalar(

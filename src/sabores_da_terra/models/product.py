@@ -55,7 +55,7 @@ def remove_product_from_pending_orders(mapper, connection, target):
 
         connection.execute(query)
 
-        # Atualiza o total_amount dos pedidos 
+        # Atualiza o total_amount dos pedidos
         query = (
             update(Order)
             .where(Order.status == 'pending')

@@ -1,20 +1,15 @@
 from http import HTTPStatus
-from typing import Annotated
 
 import stripe
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.sabores_da_terra.database import get_session
-from src.sabores_da_terra.models import Order, Product, User
-from src.sabores_da_terra.schemas import CheckoutPublic, Message
-from src.sabores_da_terra.security import get_current_user
+from src.sabores_da_terra.models import Order, Product
 from src.sabores_da_terra.settings import Settings
 
 
 class PaymentController():
-    
+
     @staticmethod
     async def checkout(order_id, current_user, session):
         db_order = await session.scalar(
@@ -58,7 +53,6 @@ class PaymentController():
         )
 
         return {"checkout_url": create_checkout.url}
-    
 
     @staticmethod
     async def webhook(request, session):
@@ -70,7 +64,7 @@ class PaymentController():
             event = stripe.Webhook.construct_event(
                 payload, sig_header, Settings().WEBHOOK_SECRET
             )
-            
+
         except stripe.error.SignatureVerificationError:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
@@ -95,7 +89,7 @@ class PaymentController():
                         db_product = await session.scalar(
                             select(Product).where(
                                 (Product.id == item.product_id) &
-                                Product.is_active )
+                                Product.is_active)
                         )
 
                         if db_product:
@@ -105,5 +99,5 @@ class PaymentController():
                     await session.commit()
 
                     return {'message': 'Order processed successfully.'}
-                
+
         return {'message': 'No orders processed.'}

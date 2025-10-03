@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from src.sabores_da_terra.models import Order
-from sqlalchemy import select
 import pytest
+from sqlalchemy import select
+
+from src.sabores_da_terra.models import Order
 
 
 def test_create_order(client, token, product, mock_db_time):
@@ -382,11 +383,11 @@ async def test_update_order_amount_after_remove_product(
             json={
                 'items': [
                     {
-                        'product_id': product.id, 
+                        'product_id': product.id,
                         'quantity': item_quantity
                     },
                     {
-                        'product_id': other_product.id, 
+                        'product_id': other_product.id,
                         'quantity': item_quantity
                     },
                 ]
