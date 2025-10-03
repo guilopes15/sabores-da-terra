@@ -8,6 +8,7 @@ from src.sabores_da_terra.models import Product
 
 
 class ProductController:
+    @staticmethod
     async def create(product, session):
         db_product = await session.scalar(
             select(Product).where(Product.name == product.name)
@@ -24,10 +25,14 @@ class ProductController:
         await session.refresh(db_product)
         return db_product
 
+    
+    @staticmethod
     async def read_all(session):
         db_products = await session.scalars(select(Product))
         return {'products': db_products.all()}
 
+    
+    @staticmethod
     async def read_by_id(product_id, session):
         db_product = await session.scalar(
             select(Product).where(Product.id == product_id)
@@ -41,6 +46,8 @@ class ProductController:
 
         return db_product
 
+    
+    @staticmethod
     async def patch(product_id, product, session):
         db_product = await session.scalar(
             select(Product).where(Product.id == product_id)
@@ -67,6 +74,8 @@ class ProductController:
 
         return db_product
 
+    
+    @staticmethod
     async def delete(product_id, session):
         db_product = await session.scalar(
             select(Product).where(Product.id == product_id)

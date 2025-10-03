@@ -10,3 +10,5 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     ACESS_TOKEN_EXPIRE_MINUTES: int
+    STRIPE_API_KEY: str
+    WEBHOOK_SECRET: str

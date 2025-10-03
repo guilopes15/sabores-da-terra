@@ -55,20 +55,18 @@ def remove_product_from_pending_orders(mapper, connection, target):
 
         connection.execute(query)
 
-
-        # Atualiza o total_amount dos pedidos afetados
-        query_update = (
+        # Atualiza o total_amount dos pedidos 
+        query = (
             update(Order)
             .where(Order.status == 'pending')
             .values(
                 total_amount=(
-                    select(func.coalesce(func.sum(OrderItem.quantity * OrderItem.price), 0))
+                    select(func.coalesce(
+                        func.sum(OrderItem.quantity * OrderItem.price), 0))
                     .where(OrderItem.order_id == Order.id)
                     .scalar_subquery()
                 )
             )
         )
-        
-        connection.execute(query_update)
 
-        # TODO: Testar e verificar o codigo acima
+        connection.execute(query)

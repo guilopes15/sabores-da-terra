@@ -1,6 +1,8 @@
 from datetime import datetime
 
 from src.sabores_da_terra.models import Order
+from sqlalchemy import select
+import pytest
 
 
 def test_create_order(client, token, product, mock_db_time):
@@ -367,5 +369,49 @@ def test_update_order_add_new_item(
     assert len(response_data['items']) == expected_items
 
 
-# TODO: Remove product from pending order update total amount
-# TODO: Test total amount is zero from empty items
+@pytest.mark.asyncio
+async def test_update_order_amount_after_remove_product(
+    client, product, session, other_product, token
+):
+    item_quantity = 3
+
+    expected_amount = other_product.price * item_quantity
+
+    response = client.post(
+            '/orders',
+            json={
+                'items': [
+                    {
+                        'product_id': product.id, 
+                        'quantity': item_quantity
+                    },
+                    {
+                        'product_id': other_product.id, 
+                        'quantity': item_quantity
+                    },
+                ]
+            },
+            headers={'Authorization': f'bearer {token}'},
+        )
+
+    client.delete(f'/products/{product.id}')
+
+    db_order = await session.scalar(
+        select(Order).where(Order.id == response.json()['id'])
+    )
+    await session.refresh(db_order)
+    assert db_order.total_amount == expected_amount
+
+
+@pytest.mark.asyncio
+async def test_order_zero_amount_after_remove_product(
+    client, order, product, session
+):
+    client.delete(f'/products/{product.id}')
+
+    db_order = await session.scalar(
+        select(Order).where(Order.id == order.id)
+    )
+    await session.refresh(db_order)
+
+    assert db_order.total_amount == 0

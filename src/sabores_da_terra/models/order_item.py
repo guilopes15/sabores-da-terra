@@ -1,9 +1,13 @@
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from sqlalchemy import CheckConstraint, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .model_registry import table_registry
+
+if TYPE_CHECKING:
+    from .product import Product
 
 
 @table_registry.mapped_as_dataclass

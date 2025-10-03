@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.sabores_da_terra.routers import auth, orders, products, users, payment
+from src.sabores_da_terra.routers import auth, orders, payment, products, users
 
 app = FastAPI()
 app.include_router(users.router)

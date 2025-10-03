@@ -7,6 +7,7 @@ from src.sabores_da_terra.models import Order, OrderItem, Product
 
 
 class OrderController:
+    @staticmethod
     async def create(order_data, current_user, session):
         db_order = await session.scalar(
             select(Order).where(Order.user_id == current_user.id)
@@ -55,7 +56,9 @@ class OrderController:
         await session.refresh(db_order)
 
         return db_order
-
+    
+    
+    @staticmethod
     async def read(current_user, session):
         db_order = await session.scalar(
             select(Order).where(
@@ -71,7 +74,9 @@ class OrderController:
             )
 
         return db_order
-
+    
+    
+    @staticmethod
     async def read_by_id(order_id, session):
         db_order = await session.scalar(
             select(Order).where(Order.id == order_id)
@@ -83,7 +88,9 @@ class OrderController:
             )
 
         return db_order
-
+    
+    
+    @staticmethod
     async def update(order_data, current_user, session):
         db_order = await session.scalar(
             select(Order).where(
@@ -113,8 +120,8 @@ class OrderController:
 
             if product.stock_quantity < item.quantity:
                 raise HTTPException(
-                    status_code=HTTPStatus.BAD_REQUEST,
-                    detail=f'insufficient stock for product_id {item.product_id}',
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail=f'insufficient stock for product_id {item.product_id}',
                 )
 
             order_item = next(
@@ -127,8 +134,7 @@ class OrderController:
             if order_item:
                 if item.quantity == 0:
                     db_order.total_amount -= (
-                        order_item.quantity * product.price
-                    )
+                        order_item.quantity * product.price)
                     db_order.items.remove(order_item)
 
                 else:
@@ -151,7 +157,9 @@ class OrderController:
         await session.refresh(db_order)
 
         return db_order
-
+    
+    
+    @staticmethod
     async def delete(current_user, session):
         db_order = await session.scalar(
             select(Order).where(
