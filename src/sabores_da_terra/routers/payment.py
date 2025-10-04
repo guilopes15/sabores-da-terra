@@ -24,9 +24,7 @@ T_CurrentUser = Annotated[User, Depends(get_current_user)]
 
 @router.post('/checkout/{order_id}', response_model=CheckoutPublic)
 async def checkout(
-    order_id: int,
-    current_user: T_CurrentUser,
-    session: T_Session
+    order_id: int, current_user: T_CurrentUser, session: T_Session
 ):
     return await PaymentController.checkout(order_id, current_user, session)
 

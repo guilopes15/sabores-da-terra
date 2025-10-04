@@ -19,6 +19,7 @@ def test_create_user(client, mock_db_time):
         'id': 1,
         'created_at': time.isoformat(),
         'updated_at': time.isoformat(),
+        'is_admin': False,
         'orders': [],
     }
 
@@ -31,32 +32,31 @@ def test_create_user_existent(client, user):
     assert response.json() == {'detail': 'Email already exists.'}
 
 
-def test_read_users(client):
-    response = client.get('/users')
-    assert response.json() == {'users': []}
-
-
-def test_read_users_with_users(client, user):
+def test_read_users(client, admin_token):
     time = datetime(2025, 9, 17)
-    response = client.get('/users')
-
+    response = client.get(
+        '/users', headers={'Authorization': f'bearer {admin_token}'}
+    )
     assert response.json() == {
         'users': [
             {
-                'username': 'test',
-                'email': 'test@test.com',
-                'id': 1,
                 'created_at': time.isoformat(),
-                'updated_at': time.isoformat(),
+                'email': 'test987@test.com',
+                'id': 1,
+                'is_admin': True,
                 'orders': [],
+                'updated_at': time.isoformat(),
+                'username': 'test456',
             }
         ]
     }
 
 
-def test_read_users_with_order(client, user, product, order):
+def test_read_users_with_users(client, user, admin_token):
     time = datetime(2025, 9, 17)
-    response = client.get('/users')
+    response = client.get(
+        '/users', headers={'Authorization': f'bearer {admin_token}'}
+    )
 
     assert response.json() == {
         'users': [
@@ -66,6 +66,37 @@ def test_read_users_with_order(client, user, product, order):
                 'id': 1,
                 'created_at': time.isoformat(),
                 'updated_at': time.isoformat(),
+                'is_admin': False,
+                'orders': [],
+            },
+            {
+                'created_at': time.isoformat(),
+                'email': 'test987@test.com',
+                'id': 2,
+                'is_admin': True,
+                'orders': [],
+                'updated_at': time.isoformat(),
+                'username': 'test456',
+            },
+        ]
+    }
+
+
+def test_read_users_with_order(client, user, product, order, admin_token):
+    time = datetime(2025, 9, 17)
+    response = client.get(
+        '/users', headers={'Authorization': f'bearer {admin_token}'}
+    )
+
+    assert response.json() == {
+        'users': [
+            {
+                'username': 'test',
+                'email': 'test@test.com',
+                'id': 1,
+                'created_at': time.isoformat(),
+                'updated_at': time.isoformat(),
+                'is_admin': False,
                 'orders': [
                     {
                         'id': 1,
@@ -85,13 +116,24 @@ def test_read_users_with_order(client, user, product, order):
                         ],
                     }
                 ],
-            }
+            },
+            {
+                'created_at': time.isoformat(),
+                'email': 'test987@test.com',
+                'id': 2,
+                'is_admin': True,
+                'orders': [],
+                'updated_at': time.isoformat(),
+                'username': 'test456',
+            },
         ]
     }
 
 
-def test_read_user_by_id(client, user):
-    response = client.get(f'/users/{user.id}')
+def test_read_user_by_id(client, user, admin_token):
+    response = client.get(
+        f'/users/{user.id}', headers={'Authorization': f'bearer {admin_token}'}
+    )
 
     assert response.json() == {
         'username': 'test',
@@ -99,12 +141,15 @@ def test_read_user_by_id(client, user):
         'id': 1,
         'created_at': user.created_at.isoformat(),
         'updated_at': user.updated_at.isoformat(),
+        'is_admin': False,
         'orders': [],
     }
 
 
-def test_read_user_by_id_wrong_user(client, user):
-    response = client.get('/users/99')
+def test_read_user_by_id_wrong_user(client, user, admin_token):
+    response = client.get(
+        '/users/99', headers={'Authorization': f'bearer {admin_token}'}
+    )
     assert response.json() == {'detail': 'User does not exists.'}
 
 
@@ -139,6 +184,7 @@ def test_update_user(client, user, token):
         'id': 1,
         'created_at': user.created_at.isoformat(),
         'updated_at': user.updated_at.isoformat(),
+        'is_admin': False,
         'orders': [],
     }
 
@@ -168,3 +214,24 @@ def test_update_user_not_found(client, user, token):
     )
 
     assert response.json() == {'detail': 'Not enough permission.'}
+
+
+def test_create_admin(client):
+    response = client.post(
+        '/users',
+        headers={'admin-secret': 'admin'},
+        json={
+            'email': 'test@a.com',
+            'password': '0000123',
+            'username': 'admin_user',
+        },
+    )
+
+    assert response.json()['is_admin']
+
+
+def test_read_users_not_permission(client, token):
+    response = client.get(
+        '/users', headers={'Authorization': f'bearer {token}'}
+    )
+    assert response.json() == {'detail': 'Admin permission required.'}

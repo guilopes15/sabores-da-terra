@@ -12,3 +12,4 @@ class Settings(BaseSettings):
     ACESS_TOKEN_EXPIRE_MINUTES: int
     STRIPE_API_KEY: str
     WEBHOOK_SECRET: str
+    ADMIN_SECRET: str

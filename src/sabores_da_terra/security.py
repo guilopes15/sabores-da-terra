@@ -71,3 +71,13 @@ async def get_current_user(
         raise credentials_exception
 
     return user
+
+
+def get_admin(current_user=Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED,
+            detail='Admin permission required.',
+        )
+
+    return current_user

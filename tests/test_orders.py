@@ -372,30 +372,27 @@ def test_update_order_add_new_item(
 
 @pytest.mark.asyncio
 async def test_update_order_amount_after_remove_product(
-    client, product, session, other_product, token
+    client, product, session, other_product, token, admin_token
 ):
     item_quantity = 3
 
     expected_amount = other_product.price * item_quantity
 
     response = client.post(
-            '/orders',
-            json={
-                'items': [
-                    {
-                        'product_id': product.id,
-                        'quantity': item_quantity
-                    },
-                    {
-                        'product_id': other_product.id,
-                        'quantity': item_quantity
-                    },
-                ]
-            },
-            headers={'Authorization': f'bearer {token}'},
-        )
+        '/orders',
+        json={
+            'items': [
+                {'product_id': product.id, 'quantity': item_quantity},
+                {'product_id': other_product.id, 'quantity': item_quantity},
+            ]
+        },
+        headers={'Authorization': f'bearer {token}'},
+    )
 
-    client.delete(f'/products/{product.id}')
+    client.delete(
+        f'/products/{product.id}',
+        headers={'Authorization': f'bearer {admin_token}'},
+    )
 
     db_order = await session.scalar(
         select(Order).where(Order.id == response.json()['id'])
@@ -406,13 +403,14 @@ async def test_update_order_amount_after_remove_product(
 
 @pytest.mark.asyncio
 async def test_order_zero_amount_after_remove_product(
-    client, order, product, session
+    client, order, product, session, admin_token
 ):
-    client.delete(f'/products/{product.id}')
-
-    db_order = await session.scalar(
-        select(Order).where(Order.id == order.id)
+    client.delete(
+        f'/products/{product.id}',
+        headers={'Authorization': f'bearer {admin_token}'},
     )
+
+    db_order = await session.scalar(select(Order).where(Order.id == order.id))
     await session.refresh(db_order)
 
     assert db_order.total_amount == 0

@@ -27,6 +27,6 @@ class ProductList(BaseModel):
 
 class ProductUpdate(BaseModel):
     name: str | None = None
-    price: Decimal | None = None
-    stock_quantity: int | None = None
+    price: Decimal | None = Field(default=None, ge=0)
+    stock_quantity: int | None = Field(default=None, ge=0)
     description: str | None = None
