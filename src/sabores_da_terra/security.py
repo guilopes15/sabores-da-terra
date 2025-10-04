@@ -29,7 +29,7 @@ def verify_password(plain_password, hashed_password):
 def create_access_token(data):
     to_encode = data.copy()
     expire = datetime.now(tz=ZoneInfo('UTC')) + timedelta(
-        minutes=Settings().ACESS_TOKEN_EXPIRE_MINUTES
+        minutes=Settings().ACCESS_TOKEN_EXPIRE_MINUTES
     )
 
     to_encode.update({'exp': expire})
