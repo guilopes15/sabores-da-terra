@@ -6,12 +6,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 
 from src.sabores_da_terra.models import Order, User
-from src.sabores_da_terra.security import get_password_hash
+from src.sabores_da_terra.security import Settings, get_password_hash
 
 
 class UserControler:
     @staticmethod
-    async def create(user, session):
+    async def create(user, session, admin_secret):
         db_user = await session.scalar(
             select(User).where(User.email == user.email)
         )
@@ -21,10 +21,13 @@ class UserControler:
                 status_code=HTTPStatus.CONFLICT, detail='Email already exists.'
             )
 
+        verify_secret = admin_secret == Settings().ADMIN_SECRET
+
         db_user = User(
             email=user.email,
             username=user.username,
             password=get_password_hash(user.password),
+            is_admin=verify_secret,
         )
 
         session.add(db_user)

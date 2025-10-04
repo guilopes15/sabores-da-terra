@@ -18,6 +18,7 @@ class UserPublic(BaseModel):
     email: EmailStr
     created_at: datetime
     updated_at: datetime
+    is_admin: bool
     orders: list[OrderPublic]
     model_config = ConfigDict(from_attributes=True)
 

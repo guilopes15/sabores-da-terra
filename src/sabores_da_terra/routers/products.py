@@ -7,6 +7,7 @@ from src.sabores_da_terra.controllers.product_controller import (
     ProductController,
 )
 from src.sabores_da_terra.database import get_session
+from src.sabores_da_terra.models import User
 from src.sabores_da_terra.schemas import (
     Message,
     ProductList,
@@ -14,13 +15,17 @@ from src.sabores_da_terra.schemas import (
     ProductSchema,
     ProductUpdate,
 )
+from src.sabores_da_terra.security import get_admin
 
 router = APIRouter(prefix='/products', tags=['products'])
 T_Session = Annotated[AsyncSession, Depends(get_session)]
+T_admin = Annotated[User, Depends(get_admin)]
 
 
 @router.post('/', response_model=ProductPublic)
-async def create_product(product: ProductSchema, session: T_Session):
+async def create_product(
+    product: ProductSchema, current_user: T_admin, session: T_Session
+):
     return await ProductController.create(product, session)
 
 
@@ -36,11 +41,16 @@ async def read_product_by_id(product_id: int, session: T_Session):
 
 @router.patch('/{product_id}', response_model=ProductPublic)
 async def patch_product(
-    product_id: int, product: ProductUpdate, session: T_Session
+    product_id: int,
+    product: ProductUpdate,
+    current_user: T_admin,
+    session: T_Session,
 ):
     return await ProductController.patch(product_id, product, session)
 
 
 @router.delete('/{product_id}', response_model=Message)
-async def delete_product(product_id: int, session: T_Session):
+async def delete_product(
+    product_id: int, current_user: T_admin, session: T_Session
+):
     return await ProductController.delete(product_id, session)

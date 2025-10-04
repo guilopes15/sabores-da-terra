@@ -74,7 +74,24 @@ async def other_user(session, mock_db_time):
         db_user = User(
             username='test123',
             email='other@test.com',
-            password=get_password_hash(password)
+            password=get_password_hash(password),
+        )
+        session.add(db_user)
+        await session.commit()
+        await session.refresh(db_user)
+        db_user.clean_password = password
+        return db_user
+
+
+@pytest_asyncio.fixture
+async def admin(session, mock_db_time):
+    with mock_db_time(model=User, time=datetime(2025, 9, 17)):
+        password = '1234'
+        db_user = User(
+            username='test456',
+            email='test987@test.com',
+            password=get_password_hash(password),
+            is_admin=True,
         )
         session.add(db_user)
         await session.commit()
@@ -121,6 +138,18 @@ def token(client, user):
         data={
             'username': user.email,
             'password': user.clean_password,
+        },
+    )
+    return response.json()['access_token']
+
+
+@pytest.fixture
+def admin_token(client, admin):
+    response = client.post(
+        '/auth/token',
+        data={
+            'username': admin.email,
+            'password': admin.clean_password,
         },
     )
     return response.json()['access_token']
@@ -187,21 +216,19 @@ async def other_order(session, mock_db_time, product, user):
 
 @contextmanager
 def _mock_stripe_signature_verification(
-    order_id=1,
-    status='paid',
-    checkout_type="checkout.session.completed"
+    order_id=1, status='paid', checkout_type='checkout.session.completed'
 ):
     fake_event = {
-        "type": checkout_type,
-        "data": {
-            "object": {
-                "payment_status": status,
-                "metadata": {"order_id": order_id},
+        'type': checkout_type,
+        'data': {
+            'object': {
+                'payment_status': status,
+                'metadata': {'order_id': order_id},
             }
         },
     }
 
-    with patch("stripe.Webhook.construct_event", return_value=fake_event):
+    with patch('stripe.Webhook.construct_event', return_value=fake_event):
         yield
 
 

@@ -61,8 +61,11 @@ def remove_product_from_pending_orders(mapper, connection, target):
             .where(Order.status == 'pending')
             .values(
                 total_amount=(
-                    select(func.coalesce(
-                        func.sum(OrderItem.quantity * OrderItem.price), 0))
+                    select(
+                        func.coalesce(
+                            func.sum(OrderItem.quantity * OrderItem.price), 0
+                        )
+                    )
                     .where(OrderItem.order_id == Order.id)
                     .scalar_subquery()
                 )

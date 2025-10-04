@@ -117,8 +117,8 @@ class OrderController:
 
             if product.stock_quantity < item.quantity:
                 raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST,
-                detail=f'insufficient stock for product_id {item.product_id}',
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    detail=f'insufficient stock for product_id {item.product_id}',
                 )
 
             order_item = next(
@@ -131,7 +131,8 @@ class OrderController:
             if order_item:
                 if item.quantity == 0:
                     db_order.total_amount -= (
-                        order_item.quantity * product.price)
+                        order_item.quantity * product.price
+                    )
                     db_order.items.remove(order_item)
 
                 else:
