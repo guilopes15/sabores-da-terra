@@ -117,8 +117,8 @@ class OrderController:
 
             if product.stock_quantity < item.quantity:
                 raise HTTPException(
-                    status_code=HTTPStatus.BAD_REQUEST,
-                    detail=f'insufficient stock for product_id {item.product_id}',
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail=f'insufficient stock for product_id {item.product_id}',
                 )
 
             order_item = next(
