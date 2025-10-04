@@ -1,0 +1,36 @@
+name: Pipeline
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with :
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check . 
+
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+      STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+      WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+      ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses : actions/setup-python@v5
+        with: 
+        python-version: "3.12"
+      - run: pipx install poetry
+      - run: poetry install
+      - run: poetry run pytest -vv
+
+
