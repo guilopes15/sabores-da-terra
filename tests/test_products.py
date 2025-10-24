@@ -25,6 +25,7 @@ def test_create_product(client, mock_db_time, admin_token):
         'id': 1,
         'created_at': time.isoformat(),
         'updated_at': time.isoformat(),
+        'is_active': True
     }
 
 
@@ -55,6 +56,7 @@ def test_read_products_with_product(client, product):
                 'description': product.description,
                 'created_at': product.created_at.isoformat(),
                 'updated_at': product.updated_at.isoformat(),
+                'is_active': True
             }
         ]
     }
@@ -71,6 +73,7 @@ def test_read_products_by_id(client, product):
         'description': product.description,
         'created_at': product.created_at.isoformat(),
         'updated_at': product.updated_at.isoformat(),
+        'is_active': True
     }
 
 
@@ -139,6 +142,7 @@ def test_patch_product(client, product, admin_token):
         'description': product.description,
         'created_at': product.created_at.isoformat(),
         'updated_at': product.updated_at.isoformat(),
+        'is_active': True
     }
 
 
@@ -160,3 +164,25 @@ def test_patch_product_name_already_exists(
         json={'name': other_product.name},
     )
     assert response.json() == {'detail': 'Product name already exists.'}
+
+
+def test_read_products_offset(client, product, other_product):
+    response = client.get('/products/filters?offset=1')
+
+    expected_length = 1
+
+    assert len(response.json()['products']) == expected_length
+
+
+def test_read_products_limit(client, product, other_product):
+    response = client.get('/products/filters?limit=1')
+
+    expected_length = 1
+
+    assert len(response.json()['products']) == expected_length
+
+
+def test_read_products_by_name(client, product):
+    response = client.get('/products/filters?name=uva')
+
+    assert response.json()['products'][0]['name'] == product.name

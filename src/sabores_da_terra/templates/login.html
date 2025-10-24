@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <title>Login</title>
+
+</head>
+<body>
+    <div id="login-container">
+        <h1>Login</h1>
+        <form id="loginForm" onsubmit="return auth(event)">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        <button id="register-page-btn" onclick="window.location.href = '/register'">Cadastrar</button>
+        <div id="error-box"></div>
+    </div>
+    <script>
+        var container = document.getElementById("error-box");
+
+        async function auth(event) {
+            event.preventDefault();
+            
+            const form = document.getElementById('loginForm');
+            const formData = new FormData();
+            formData.append('username', form.email.value);
+            formData.append('password', form.password.value);
+            
+            const response = await fetch("/auth/token", {
+                method: 'POST',
+                credentials: "include",
+                body: formData
+            });
+
+            if (response.ok) {
+                setTimeout(() => {
+                        window.location.href = '/home';
+                }, 500);
+                
+            } else if (response.status === 422 || response.status === 400) {
+                container.innerHTML = `
+                    <p class="error-message">Não foi possível efetuar o login. 
+                        Verifique se os dados estão corretos e tente novamente.
+                    </p>
+                `;
+            } else {
+                container.innerHTML = `
+                    <p class="error-message">Não foi possível efetuar o login. 
+                        Tente mais tarde.
+                    </p>
+                `;
+            }
+
+        }
+    </script>  
+</body>
+</html>

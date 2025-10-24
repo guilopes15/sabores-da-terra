@@ -9,6 +9,7 @@ from src.sabores_da_terra.controllers.product_controller import (
 from src.sabores_da_terra.database import get_session
 from src.sabores_da_terra.models import User
 from src.sabores_da_terra.schemas import (
+    FilterPage,
     Message,
     ProductList,
     ProductPublic,
@@ -32,6 +33,14 @@ async def create_product(
 @router.get('/', response_model=ProductList)
 async def read_products(session: T_Session):
     return await ProductController.read_all(session)
+
+
+@router.get('/filters', response_model=ProductList)
+async def filter_products(
+    session: T_Session,
+    filter_page: Annotated[FilterPage, Depends()]
+):
+    return await ProductController.pagination(session, filter_page)
 
 
 @router.get('/{product_id}', response_model=ProductPublic)

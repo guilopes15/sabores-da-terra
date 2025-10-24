@@ -64,6 +64,11 @@ class UserControler:
 
     @staticmethod
     async def update(user_id, user, session, current_user):
+        if not current_user:
+            raise HTTPException(
+                status_code=HTTPStatus.UNAUTHORIZED,
+                detail='Could not validate credentials')
+
         if current_user.id != user_id:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
@@ -90,7 +95,12 @@ class UserControler:
         return refreshed_user
 
     @staticmethod
-    async def delete(user_id, session, current_user):
+    async def delete(user_id, session, current_user, response):
+        if not current_user:
+            raise HTTPException(
+                status_code=HTTPStatus.UNAUTHORIZED,
+                detail='Could not validate credentials')
+
         if current_user.id != user_id:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
@@ -99,4 +109,7 @@ class UserControler:
 
         await session.delete(current_user)
         await session.commit()
+
+        response.delete_cookie("access_token")
+
         return {'message': 'User deleted'}

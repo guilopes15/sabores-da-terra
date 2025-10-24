@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,6 +14,7 @@ from src.sabores_da_terra.security import (
     get_current_user,
     verify_password,
 )
+from src.sabores_da_terra.settings import Settings
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
@@ -23,7 +24,11 @@ T_CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 @router.post('/token', response_model=Token)
-async def login_for_access_token(session: T_Session, form_data: T_OAuth2Form):
+async def login_for_access_token(
+    session: T_Session,
+    form_data: T_OAuth2Form,
+    response: Response
+):
     user = await session.scalar(
         select(User).where(User.email == form_data.username)
     )
@@ -36,10 +41,34 @@ async def login_for_access_token(session: T_Session, form_data: T_OAuth2Form):
 
     access_token = create_access_token(data={'sub': user.email})
 
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        max_age=Settings().ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+
+    )
+
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
 @router.post('/refresh_token', response_model=Token)
-async def refresh_token(user: T_CurrentUser):
+async def refresh_token(user: T_CurrentUser, response: Response):
+
+    if not user:
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED,
+            detail="Could not validate credentials"
+        )
+
     new_access_token = create_access_token(data={'sub': user.email})
+
+    response.set_cookie(
+        key="access_token",
+        value=new_access_token,
+        httponly=True,
+        max_age=Settings().ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+
+    )
+
     return {'access_token': new_access_token, 'token_type': 'bearer'}

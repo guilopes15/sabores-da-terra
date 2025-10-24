@@ -1,0 +1,121 @@
+{% extends "auth_base.html" %}
+
+{% block style %}
+    <link rel="stylesheet" href="/static/css/cart.css">
+{% endblock %}
+
+{% block content %}
+<div id="info-message"></div>
+<div id="orders-container"></div>
+
+<script>
+    async function loadOrders() {
+        let orderContainer = document.getElementById('orders-container');
+        let infoContainer = document.getElementById('info-message');
+        
+        const response = await fetch('/orders/my-orders');
+        const order = await response.json();
+
+        if (response.ok && order.items.length > 0) {
+            
+            const itemsHtml = (order.items ?? []).map(item => `
+                <div class="item-card" data-product-id="${item.product_id}">
+                    <a href="/product-page/${item.product_id}">${item.product_name}</a>            
+                    <label for="quantity-${item.product_id}">Quantidade:</label>
+                    <input type="number" id="quantity-${item.product_id}" name="quantity" value="${item.quantity}" min="0">
+                    <div class="item-price">Preço unitario ${item.price}</div>
+                </div>
+            `).join('');
+                
+            orderContainer.innerHTML = `
+                <div id="orders-card">
+                    <p id="order-status">À Pagar</p>
+        
+                    <div class="order-items-wrapper">
+                        <div class="order-items">${itemsHtml}</div>
+            
+                        <div id="menu-options">
+                            <button id="update-order-btn">Atualizar pedido</button>
+                            <button id="buy-btn">Comprar</button>
+                            <p id="order-amount">Total: R$ ${order.total_amount}</p>
+                            <p id="del-message">Para remover algum produto, basta definir a quantidade para 0 e clicar em Atualizar Pedido.</p>
+                        </div>
+                    </div>
+        
+                    
+                </div>
+            `;
+            
+            document.getElementById("update-order-btn").addEventListener("click", async () => {
+                const itemCards = document.querySelectorAll(".item-card");
+                const updatedItems = [];
+
+                itemCards.forEach(card => {
+                    const productId = card.getAttribute("data-product-id");
+                    const quantity = card.querySelector("input[name='quantity']").value;
+                    
+                    updatedItems.push(
+                        {
+                            product_id: Number(productId), 
+                            quantity: Number(quantity)
+                        }
+                    );
+                
+                });
+
+                const updateResponse = await fetch('/orders/my-orders', {
+                    method: 'PUT',
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({items: updatedItems})
+                });
+
+                if (updateResponse.ok) {
+                    infoContainer.innerHTML = '<p class="success-message">Pedido atualizado com sucesso!</p>';                   
+                    setTimeout(() => loadOrders(), 1000);
+                    setTimeout(() => infoContainer.innerHTML = '', 5000)         
+                    return; 
+                
+                } else if (updateResponse.status === 401) {
+                    infoContainer.innerHTML = '<p class="error-message">Sua sessão expirou! Rediredionando para pagina de login ...</p>';
+                    setTimeout(() => window.location.href = '/login', 3000);
+                    return;
+                
+                } else if (updateResponse.status === 400) {
+                    infoContainer.innerHTML = '<p class="error-message">Stock insuficiente! Visite a pagina do produto desejado.</p>'
+                    setTimeout(() => infoContainer.innerHTML = '', 5000)
+                }
+            });
+            
+            document.getElementById("buy-btn").addEventListener("click", async () => {
+                const checkoutResponse = await fetch(`/payment/checkout/${order.id}`, {method: 'POST'});
+
+                if (checkoutResponse.status === 401) {
+                    infoContainer.innerHTML = '<p class="error-message">Sua sessão expirou! Rediredionando para pagina de login ...</p>' 
+                    setTimeout(() => window.location.href = '/login', 3000);
+                    return;
+
+                } else if (checkoutResponse.status === 404) {
+                    infoContainer.innerHTML = '<p class="error-message">Nenhum pedido à pagar!</p>'
+                    setTimeout(() => window.location.href = '/cart', 3000);
+                    return;
+                } 
+
+                const checkoutUrl = await checkoutResponse.json();
+                window.open(`${checkoutUrl.checkout_url}`, '_blank');
+            });
+
+        } else if (response.status === 401) {
+            orderContainer.innerHTML = '<p class="error-message">Sua sessão expirou! Rediredionando para pagina de login ...</p>'
+            setTimeout(() => window.location.href = '/login', 3000);
+        
+        } else {
+            orderContainer.innerHTML = '<p class="error-message">Nenhum pedido à pagar!</p>'
+            
+        }
+        
+    } 
+
+    window.addEventListener('DOMContentLoaded', loadOrders); 
+
+</script>
+{% endblock %}

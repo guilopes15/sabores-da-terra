@@ -49,7 +49,7 @@ def upgrade() -> None:
     sa.Column('status', sa.Enum('pending', 'canceled', 'paid', name='orderstatus'), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
-    sa.CheckConstraint('total_amount > 0', name='check_total_amount_positive'),
+    sa.CheckConstraint('total_amount >= 0', name='check_total_amount_non_negative'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -59,7 +59,7 @@ def upgrade() -> None:
     sa.Column('product_id', sa.Integer(), nullable=False),
     sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('price', sa.Numeric(), nullable=False),
-    sa.CheckConstraint('quantity > 0', name='check_quantity_positive'),
+    sa.CheckConstraint('quantity >= 0', name='check_quantity_non_negative'),
     sa.ForeignKeyConstraint(['order_id'], ['orders.id'], ),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),
     sa.PrimaryKeyConstraint('id')

@@ -1,0 +1,329 @@
+#perfil-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#user-info {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    text-align: center;
+    border: 2px solid #e8f5e3;
+}
+
+#user-info h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2d3436;
+    margin-bottom: 0.5rem;
+}
+
+#user-info p {
+    font-size: 1.1rem;
+    color: #636e72;
+}
+
+.user-menu {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.user-menu button {
+    flex: 1;
+    min-width: 200px;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #6a9c3d 0%, #5a8c2d 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(106, 156, 61, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-menu button:hover {
+    background: linear-gradient(135deg, #5a8c2d 0%, #4a7c1d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(106, 156, 61, 0.4);
+}
+
+.user-menu button:active {
+    transform: translateY(0);
+}
+
+#delete-account {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3) !important;
+}
+
+#delete-account:hover {
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important;
+    box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4) !important;
+}
+
+#content-panel {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    min-height: 300px;
+}
+
+#content-panel h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #2d3436;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid #6a9c3d;
+    padding-bottom: 0.8rem;
+}
+
+#content-panel h4 {
+    font-size: 1.2rem;
+    color: #2d3436;
+    margin: 1rem 0 0.5rem;
+}
+
+.order-card {
+    background: #f9f6f1;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #6a9c3d;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.order-card h3 {
+    font-size: 1.3rem;
+    color: #2d3436;
+    margin-bottom: 0.8rem;
+}
+
+.order-card > p {
+    font-size: 1rem;
+    color: #636e72;
+    margin-bottom: 0.5rem;
+}
+
+.item-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.8rem;
+    border: 1px solid #dfe6e9;
+}
+
+.item-card p {
+    font-size: 0.95rem;
+    color: #2d3436;
+    margin-bottom: 0.3rem;
+}
+
+
+#content-panel input[type="text"],
+#content-panel input[type="email"],
+#content-panel input[type="password"] {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: 2px solid #dfe6e9;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #2d3436;
+    background: #f9f6f1;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+#content-panel input:focus {
+    outline: none;
+    border-color: #6a9c3d;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(106, 156, 61, 0.1);
+}
+
+#content-panel input::placeholder {
+    color: #95a5a6;
+}
+
+#update-btn,
+#del-btn {
+    width: 100%;
+    padding: 1.2rem;
+    background: linear-gradient(135deg, #6a9c3d 0%, #5a8c2d 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(106, 156, 61, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
+}
+
+#update-btn:hover,
+#del-btn:hover {
+    background: linear-gradient(135deg, #5a8c2d 0%, #4a7c1d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(106, 156, 61, 0.5);
+}
+
+#del-btn {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+#del-btn:hover {
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+    box-shadow: 0 8px 24px rgba(231, 76, 60, 0.5);
+}
+
+#delete-message {
+    font-size: 1.2rem;
+    color: #2d3436;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+#error-box,
+#message-box {
+    margin-top: 1.5rem;
+}
+
+.error-message {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    animation: slideDown 0.3s ease-out;
+}
+
+.sucess-message {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+    animation: slideDown 0.3s ease-out;
+}
+
+.erro-message {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    #perfil-container {
+        padding: 1rem;
+    }
+
+    #user-info {
+        padding: 1.5rem;
+    }
+
+    #user-info h3 {
+        font-size: 1.6rem;
+    }
+
+    .user-menu {
+        flex-direction: column;
+    }
+
+    .user-menu button {
+        min-width: 100%;
+    }
+
+    #content-panel {
+        padding: 1.5rem;
+    }
+
+    #content-panel h2 {
+        font-size: 1.5rem;
+    }
+
+    .order-card {
+        padding: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #perfil-container {
+        margin: 1rem auto;
+    }
+
+    #user-info h3 {
+        font-size: 1.4rem;
+    }
+
+    #user-info p {
+        font-size: 1rem;
+    }
+
+    .user-menu button {
+        padding: 0.9rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    #content-panel h2 {
+        font-size: 1.3rem;
+    }
+
+    .order-card h3 {
+        font-size: 1.1rem;
+    }
+
+    #update-btn,
+    #del-btn {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+}

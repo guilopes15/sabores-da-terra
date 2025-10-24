@@ -57,3 +57,11 @@ async def test_get_current_user_not_found(session):
         await get_current_user(session, token)
 
     assert ex.value.detail == 'Could not validate credentials'
+
+
+@pytest.mark.asyncio
+async def test_get_current_user_without_token(session):
+    result = await get_current_user(
+        session, authorization=None, access_token=None
+    )
+    assert not result

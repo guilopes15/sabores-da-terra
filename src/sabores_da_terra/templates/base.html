@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/base.css">
+    {% block style %} {% endblock %}
+    <title>Sabores da Terra</title>
+    
+</head>
+<body>
+    <header>
+        <a href="/home" class="logo"> Sabores da terra </a>
+          
+        <div class="search_bar">
+            <input type="text" id="input-bar" placeholder="Procure o produto que deseja ...">
+        </div>
+        <div id="error-box"></div>
+        <button id="search-btn">
+            <img src="/static/lupa.png" alt="logo lupa" title="lupa">
+        </button>
+        
+        <div class="menu">
+            {% if user %}    
+                {% block auth %}
+                
+                {% endblock %}
+                
+                <button class="btn-profile" onclick="window.location.href='/perfil'">
+                    Meu perfil
+                </button>
+                
+                {% if user.is_admin %}
+                    <button id="admin-panel-btn" onclick="window.location.href='/admin-panel'">
+                        Painel
+                    </button>
+                
+                {% endif %}
+            
+            {% else %}
+                <button class="btn-login" onclick="window.location.href='/login'">
+                    Entrar
+                </button>
+                
+            {% endif %}
+        
+        </div>
+        <div id="cart">
+            <button id="cart-btn" onclick="window.location.href = '/cart'">
+                <img src="/static/cart.png" alt="logo carrinho" title="Carrinho de compras">
+                
+            </button>
+        </div>
+        <div class="media">
+            
+            <img src="/static/whatsapp.png" alt="logo whatsapp" title="(21) 99999-9999">
+            <img src="/static/instagram.png" alt="logo instagram" title="Instagram">
+        </div>
+        <script>
+            document.getElementById("search-btn").addEventListener("click", async () => {
+
+            const inputBar = document.getElementById('input-bar').value.trim();
+            const response = await fetch(`/products/filters?name=${inputBar}`);
+            const data = await response.json();
+            
+            if (!data.products || data.products.length === 0) {
+                let container = document.getElementById("error-box");
+                container.innerHTML = `
+                    <p class="error-message">Produto não encontrado!</p>
+                `
+                setTimeout(() => {
+                    container.innerHTML = '';
+                    }, 3000);
+                    
+                    return;
+                }
+            
+            window.location.href = `/product-page/${data.products[0].id}`
+        });
+
+
+        </script>
+    </header>
+
+    <main>
+        {% block content %}
+
+        {% endblock %}
+    </main>
+    
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Sabores da Terra
+                    <div class="footer-social">
+                        <a href="#" title="WhatsApp">
+                            <img src="/static/whatsapp.png" alt="WhatsApp">
+                        </a>
+                        <a href="#" title="Instagram">
+                            <img src="/static/instagram.png" alt="Instagram">
+                        </a>
+                    </div>
+                </h3>
+                <p>Produtos orgânicos frescos e saudáveis, direto da roça para sua mesa. Cultivados com responsabilidade ambiental.</p>
+        </div>
+
+        <div class="footer-section">
+            <h3>Atendimento</h3>
+            <ul>
+                <li>📞 (21) 99999-9999</li>
+                <li>📧 contato@saboresdaterra.com.br</li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>Formas de Pagamento</h3>
+            <p>Aceitamos PIX, cartões de crédito e débito.</p>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2024 Sabores da Terra - Todos os direitos reservados</p>
+        <p>Desenvolvido com 💚 para uma alimentação mais saudável</p>
+    </div>
+    </footer>
+</body>
+</html>

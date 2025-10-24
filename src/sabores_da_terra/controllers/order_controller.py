@@ -9,6 +9,11 @@ from src.sabores_da_terra.models import Order, OrderItem, Product
 class OrderController:
     @staticmethod
     async def create(order_data, current_user, session):
+        if not current_user:
+            raise HTTPException(
+                status_code=HTTPStatus.UNAUTHORIZED,
+                detail='Could not validate credentials')
+
         db_order = await session.scalar(
             select(Order).where(Order.user_id == current_user.id)
         )
@@ -25,7 +30,8 @@ class OrderController:
         for item in order_data.items:
             product = await session.scalar(
                 select(Product).where(
-                    (Product.id == item.product_id) & Product.is_active
+                    (Product.id == item.product_id) &
+                    (Product.is_active)
                 )
             )
             if not product:
@@ -45,6 +51,7 @@ class OrderController:
                     product_id=item.product_id,
                     quantity=item.quantity,
                     price=product.price,
+                    product_name=product.name,
                 )
 
                 items.append(items_to_add)
@@ -59,6 +66,11 @@ class OrderController:
 
     @staticmethod
     async def read(current_user, session):
+        if not current_user:
+            raise HTTPException(
+                status_code=HTTPStatus.UNAUTHORIZED,
+                detail='Could not validate credentials')
+
         db_order = await session.scalar(
             select(Order).where(
                 (Order.user_id == current_user.id)
@@ -89,6 +101,11 @@ class OrderController:
 
     @staticmethod
     async def update(order_data, current_user, session):
+        if not current_user:
+            raise HTTPException(
+                status_code=HTTPStatus.UNAUTHORIZED,
+                detail='Could not validate credentials')
+
         db_order = await session.scalar(
             select(Order).where(
                 (Order.user_id == current_user.id)
@@ -105,7 +122,8 @@ class OrderController:
         for item in order_data.items:
             product = await session.scalar(
                 select(Product).where(
-                    (Product.id == item.product_id) & Product.is_active
+                    (Product.id == item.product_id) &
+                    (Product.is_active)
                 )
             )
 
@@ -133,7 +151,7 @@ class OrderController:
                     db_order.total_amount -= (
                         order_item.quantity * product.price
                     )
-                    db_order.items.remove(order_item)
+                    await session.delete(order_item)
 
                 else:
                     difference = item.quantity - order_item.quantity
@@ -146,6 +164,7 @@ class OrderController:
                     product_id=item.product_id,
                     quantity=item.quantity,
                     price=product.price,
+                    product_name=product.name
                 )
 
                 db_order.items.append(items_to_add)
@@ -158,6 +177,11 @@ class OrderController:
 
     @staticmethod
     async def delete(current_user, session):
+        if not current_user:
+            raise HTTPException(
+                status_code=HTTPStatus.UNAUTHORIZED,
+                detail='Could not validate credentials')
+
         db_order = await session.scalar(
             select(Order).where(
                 (Order.user_id == current_user.id)

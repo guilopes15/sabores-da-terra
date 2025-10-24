@@ -1,0 +1,183 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+{% block style %}
+    <link rel="stylesheet" href="/static/css/perfil.css">
+{% endblock %}
+
+<div id="perfil-container">
+    <div id="user-info">        
+    </div>
+    
+    <div class="user-menu">
+        <button id="user-orders">
+            Meus pedidos
+        </button>
+        <button id="update-user-data">
+            Atualizar meus dados
+        </button>
+        <button id="delete-account">
+            Deletar conta
+        </button>        
+    </div>
+    
+    <div id="content-panel"></div>
+</div>
+
+
+<script>
+    const userId = "{{ user.id }}";
+    var perfilContainer = document.getElementById("perfil-container");
+    var infoContainer = document.getElementById('user-info');
+    var panelContainer = document.getElementById('content-panel');
+    
+    
+    async function getUser() {
+        
+        const response = await fetch(`/users/${userId}`);
+        if (!response.ok) {
+            
+            perfilContainer.innerHTML = `<p class="error-message">Usuario não existe! Você sera<>`
+            
+            setTimeout(() => window.location.href = '/login', 3000);
+            
+            return;
+        }
+        return await response.json();
+    }
+    
+    
+    async function showUserData() {
+        const user = await getUser();
+        if (!user) return;       
+
+        infoContainer.innerHTML= `            
+            <h3 id='name'>${user.username}</h3>
+            <p id='email'>${user.email}</p>
+        `;
+
+        window.currentUser = user;
+    }
+
+    async function showMyOrders() {
+        const user = window.currentUser || (await getUser());
+        if (!user) return;
+
+        const ordersHtml = (user.orders ?? []).map(order => {
+            const itemsHtml = (order.items ?? []).map(item => `
+                <div class="item-card">
+                    <p>Produto: ${item.product_name}</p>
+                    <p>Quantidade: ${item.quantity}</p>
+                    <p>Preço Unitario: R$ ${item.price}</p>
+                </div>
+            `).join('');
+
+            return `
+                <div class="order-card">
+                    <h3>Pedido #${order.id}</h3>
+                    <p>Status: ${order.status}</p>
+                    <p>Total: R$ ${order.total_amount}</p>
+                    <h4>Itens:</h4>
+                    ${itemsHtml}
+                </div>
+            `;
+        }).join('');
+
+        panelContainer.innerHTML = `
+            <h2>Pedidos de ${user.username}</h2>
+            ${ordersHtml}
+        `;
+    }
+
+    async function deleteAccount() {
+        
+        panelContainer.innerHTML = `
+            <p id="delete-message">Tem certeza que quer deletar a conta?</p>
+            <button id="del-btn">Clique aqui!</button>
+            <div id="error-box"></div>
+        `;
+
+        document.getElementById("del-btn").onclick = async function () {
+            const response = await fetch(`/users/${userId}`, {
+                method: 'DELETE'
+            });
+            
+            const errorBox = document.getElementById("error-box");
+            
+            if (response.ok) {               
+                setTimeout(() => panelContainer.innerHTML = '<p class="sucess-message">Conta deletada com sucesso. Redirecionando ... </p>', 3000);
+                window.location.href = '/home'
+            
+            } else if (response.status === 403){
+                errorBox.innerHTML = '<p class="error-message">Não foi possível deletar conta! Sem permissão.</p>'
+          
+            } else {
+                setTimeout(() => errorBox.innerHTML = '<p class="error-message">Não foi possível deletar conta! Redirecionando ... </p>', 3000);
+                window.location.href = '/login'
+                
+            }
+        
+        }
+
+    }
+
+    async function updateUserData() {
+        
+        panelContainer.innerHTML = `
+
+            <input type="text" id="name-btn" name="name" placeholder="Nome" minlength="3" required>
+            <input type="email" id="email-btn" name="email" placeholder="Email" required>
+            <input type="password" id="password-btn" name="password" placeholder="Senha" minlength="4" required>
+            <button id="update-btn">Atualizar Dados</button>
+            <div id="message-box"></div>
+        `;
+        
+        document.getElementById("update-btn").onclick = async function () {
+            const name = document.getElementById("name-btn");
+            const email = document.getElementById("email-btn");
+            const password = document.getElementById("password-btn");
+            const messageBox = document.getElementById("message-box");
+
+            const data = {
+                username: name.value, 
+                email: email.value, 
+                password: password.value
+            }
+            
+            const response = await fetch(`/users/${userId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            
+            
+            });
+            
+            if (response.ok) {
+                messageBox.innerHTML = "<p class='sucess-message'>Dados atualizados com sucesso!</p>";
+            } else if (response.status === 409) {
+                messageBox.innerHTML = "<p class='erro-message'>Erro ao atualizar dados. Email invalido ou já existe!";
+            } else {
+                setTimeout(() => messageBox.innerHTML = '<p class="error-message">Não foi possível atualizar dados! Redirecionando ... </p>', 3000);
+                window.location.href = '/login'
+            }
+        };      
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        await showUserData();
+        
+        document
+            .getElementById("user-orders")
+            .addEventListener("click", showMyOrders);
+
+        document
+            .getElementById("update-user-data")
+            .addEventListener("click", updateUserData);
+
+        document
+            .getElementById("delete-account")
+            .addEventListener("click", deleteAccount);
+    });
+</script>
+
+{% endblock %}

@@ -26,4 +26,5 @@ class OrderItem:
     )
     quantity: Mapped[int] = mapped_column(nullable=False, default=0)
     price: Mapped[Decimal] = mapped_column(nullable=False, default=0)
+    product_name: Mapped[str] = mapped_column(nullable=False, default='')
     product: Mapped['Product'] = relationship(init=False)

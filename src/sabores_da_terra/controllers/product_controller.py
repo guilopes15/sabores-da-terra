@@ -45,6 +45,19 @@ class ProductController:
         return db_product
 
     @staticmethod
+    async def pagination(session, filter_page):
+        query = select(Product).where(Product.is_active)
+
+        if filter_page.name:
+            query = query.filter(Product.name.ilike(f"%{filter_page.name}%"))
+
+        active_products = await session.scalars(
+            query.limit(filter_page.limit).offset(filter_page.offset)
+        )
+
+        return {'products': active_products.all()}
+
+    @staticmethod
     async def patch(product_id, product, session):
         db_product = await session.scalar(
             select(Product).where(Product.id == product_id)

@@ -1,0 +1,225 @@
+{% extends "auth_base.html" %}
+
+{% block style %}
+    <link rel="stylesheet" href="/static/css/admin.css">
+{% endblock %}
+
+
+{% block content %}
+     
+<div id="admin-panel-container">
+    <div id="menu">
+        <button id="create-product-btn">Criar Produto</button>
+        <button id="search-products-btn">Buscar Produtos</button>
+        <button id="update-product-btn">Atualizar Produto</button>
+        <button id="delete-product-btn">Deletar Produto</button>        
+    </div>
+    <div id="chosen-option-content"></div>
+    <div id="info-message"></div>
+</div>
+<script>
+    var container = document.getElementById('chosen-option-content');
+    var infoContainer = document.getElementById('info-message');
+    
+    async function createProductForm() {
+ 
+        container.innerHTML= `<form id="productForm" onsubmit="return createProductSendForm(event)">
+            <input type="text" name="name" placeholder="Nome" minlength="1" required>
+            <input type="text" name="description" placeholder="Descrição">
+            <input type="number" name="stock_quantity" placeholder="Quantidade" min="0" step='1' required>
+            <input type="number" name="price" placeholder="Preço" min="0.1" step="0.01" required>
+            <button type="submit">Criar Produto</button>
+        </form>
+        `;
+        
+    }
+    
+    async function createProductSendForm(event){
+        event.preventDefault();
+        const form = document.getElementById('productForm');
+        const data = {
+            name: form.name.value, 
+            description: form.description.value, 
+            stock_quantity: form.stock_quantity.value,
+            price: form.price.value
+        };
+
+        const response = await fetch("/products/", {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            infoContainer.innerHTML = '<p class="sucess-message">Produto criado com sucesso!</p>'
+            setTimeout(() => infoContainer.innerHTML = '', 5000)
+            form.reset();
+            return;
+            
+        } else if (response.status === 409) {
+            infoContainer.innerHTML = '<p class="error-message">Já existe um produto com esse nome!</p>'
+            setTimeout(() => infoContainer.innerHTML = '', 5000)
+            return;
+        
+        } else {
+            infoContainer.innerHTML = '<p class="error-message">Não foi possível criar produto! Verifique os dados e tente novamente.</p>'
+            setTimeout(() => infoContainer.innerHTML = '', 5000)
+            return;
+        }   
+    }
+
+    async function updateProductForm() {
+
+        container.innerHTML = `
+            <form id="productForm" onsubmit="return updateProductSendForm(event)">
+                <input type="number" name="id" placeholder="Id" min="1" step="1" required>
+                <input type="text" name="name" minlength="1" placeholder="Nome">
+                <input type="text" name="description" placeholder="Descrição">
+                <input type="number" name="stock_quantity" placeholder="Quantidade" min="0" step='1'>
+                <input type="number" name="price" placeholder="Preço" min="0.1" step="0.01">
+                <button type="submit">Atualizar Produto</button>
+        </form>
+        `;
+
+    }
+
+    async function updateProductSendForm(event) {
+        event.preventDefault();
+        const form = document.getElementById('productForm');
+        const data = {};
+        if (form.name.value) data.name = form.name.value;
+        if (form.description.value) data.description = form.description.value;
+        if (form.stock_quantity.value) data.stock_quantity = form.stock_quantity.value;
+        if (form.price.value) data.price = form.price.value;
+
+        const response = await fetch(`/products/${form.id.value}`, {
+            method: 'PATCH',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            infoContainer.innerHTML = '<p class="sucess-message">Produto atualizado com sucesso!</p>'
+            form.reset();
+            setTimeout(() => infoContainer.innerHTML = '', 5000)
+            return;
+            
+            
+        } else if (response.status === 404) {
+            infoContainer.innerHTML = '<p class="error-message">Produto não encontrado! Verifique o Id.</p>'
+            setTimeout(() => infoContainer.innerHTML = '', 5000)
+            return;
+        
+        } else if (response.status === 409) {
+            infoContainer.innerHTML = '<p class="error-message">Já existe um produto com esse nome!</p>'
+            setTimeout(() => infoContainer.innerHTML = '', 5000)
+            return;
+        
+        } else {
+            infoContainer.innerHTML = '<p class="error-message">Não foi possível criar produto! Verifique os dados e tente novamente.</p>'
+            setTimeout(() => infoContainer.innerHTML = '', 5000)
+            return;
+        }
+    }
+
+    async function deleteProduct() {
+        container.innerHTML = `
+        <input type="number" id="product_id" name="id" placeholder="Id" min="1" step="1" required>
+        <button id="delete-btn">Deletar</button>
+        `;
+
+        document.getElementById('delete-btn').addEventListener("click", async () => {
+            const id = parseInt(document.getElementById("product_id").value);
+            const response = await fetch(`/products/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                infoContainer.innerHTML = '<p class="success-message">Produto deletado com sucesso!</p>'
+                setTimeout(() => infoContainer.innerHTML = '', 5000)
+                return;
+            
+            } else {
+                infoContainer.innerHTML = '<p class="error-message">Produto não encontrado! Verifique o Id.</p>'
+                setTimeout(() => infoContainer.innerHTML = '', 5000)
+                return;
+            }
+        
+        });
+    }
+
+    async function searchProducts() {
+        container.innerHTML = `
+            <div id="search-options">
+                <button id="search-by-name">Por Nome</button>
+                <button id="search-all-products">Todos os Produtos</button>
+            </div>
+        `;
+
+        document.getElementById("search-by-name").addEventListener("click", async () => {
+            container.innerHTML = `
+            <input type="text" id="product_name" name="product_name" placeholder="Nome do Produto" required>
+            <button id="search-single-product-btn">Buscar</button>
+            `;
+            
+            document.getElementById("search-single-product-btn").addEventListener("click", async () => {
+                const name = document.getElementById("product_name");
+                const response = await fetch(`/products/filters?name=${name.value}`)
+                const data = await response.json();
+                
+                if (data.products.length > 0) {
+                    const product = data.products[0];
+                
+                    container.innerHTML =`
+                    <p>Id: ${product.id}<p>
+                    <p>Nome: ${product.name}</p>
+                    <p>Descrição: ${product.description}</p>
+                    <p>Stock: ${product.stock_quantity}</p>
+                    <p>Preço: ${product.price}</p>
+                    <p>Ativo: ${product.is_active}</p>
+                    
+                    `;
+                } else {
+                    container.innerHTML = '<p class="error-message">Produto não encontrado!</p>'
+                }
+            });
+        });
+        
+        document.getElementById("search-all-products").addEventListener("click", async () => {
+            const response = await fetch('/products/'); 
+
+            const data = await response.json();
+
+            if (data.products.length > 0) {
+                let html = '';
+
+                data.products.forEach(product => {
+                    html +=` 
+                    <div class='product-card'>
+                        <p>Id: ${product.id}</p>
+                        <p>Nome: ${product.name}</p>
+                        <p>Descrição: ${product.description}</p>
+                        <p>Stock: ${product.stock_quantity}</p>
+                        <p>Preço: R$ ${product.price}</p>
+                        <p>Ativo: ${product.is_active}</p>
+                        
+                    </div>`;
+                    
+                });
+                container.innerHTML = html
+            
+            } else {
+                container.innerHTML = '<p class="error-message">Nenhum produto encontrado!</p>'
+            }
+          
+        });
+        
+    }
+
+    document.getElementById("create-product-btn").addEventListener("click", createProductForm);
+    document.getElementById("update-product-btn").addEventListener("click", updateProductForm);
+    document.getElementById("delete-product-btn").addEventListener("click", deleteProduct);
+    document.getElementById("search-products-btn").addEventListener("click", searchProducts);
+</script>
+
+{% endblock %}
