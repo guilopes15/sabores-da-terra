@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from http import HTTPStatus
 from zoneinfo import ZoneInfo
 
-from fastapi import Depends, HTTPException
+from fastapi import Cookie, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jwt import decode, encode
 from jwt.exceptions import ExpiredSignatureError, PyJWTError
@@ -15,7 +15,7 @@ from src.sabores_da_terra.models import User
 from src.sabores_da_terra.settings import Settings
 
 pwd_context = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/token', auto_error=False)
 
 
 def get_password_hash(password):
@@ -42,13 +42,19 @@ def create_access_token(data):
 
 async def get_current_user(
     session: AsyncSession = Depends(get_session),
-    token: str = Depends(oauth2_scheme),
+    authorization: str | None = Depends(oauth2_scheme),
+    access_token: str | None = Cookie(None)
 ):
     credentials_exception = HTTPException(
         status_code=HTTPStatus.UNAUTHORIZED,
         detail='Could not validate credentials',
-        headers={'www-Authenticate': 'Bearer'},
+        headers={'Www-Authenticate': 'Bearer'},
     )
+
+    token = authorization or access_token
+
+    if not token:
+        return None
 
     try:
         payload = decode(

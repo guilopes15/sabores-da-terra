@@ -1,3 +1,6 @@
+from http import HTTPStatus
+
+
 def test_checkout(client, token, order):
     response = client.post(
         f'/payment/checkout/{order.id}',
@@ -5,6 +8,16 @@ def test_checkout(client, token, order):
     )
     assert 'checkout_url' in response.json().keys()
     assert 'checkout.stripe.com' in response.json()['checkout_url']
+
+
+def test_checkout_without_user(client, order):
+    response = client.post(
+        f'/payment/checkout/{order.id}',
+        headers={},
+    )
+
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}
 
 
 def test_checkout_order_not_found(client, token):

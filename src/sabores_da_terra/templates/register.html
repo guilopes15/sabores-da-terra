@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/register.css">
+    <title>Cadastrar</title>
+
+</head>
+<body>
+    <div>
+        <h1>Crie sua conta</h3>
+        <form id="registerForm" onsubmit="return sendForm(event)">
+            <input type="text" name="name" placeholder="Nome" minlength="3" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Senha" minlength="4" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <div id="error-box"></div>
+        
+        <script>
+            const container = document.getElementById("error-box");
+
+            async function sendForm(event){
+                event.preventDefault();
+
+                const form = document.getElementById('registerForm');
+                const data = {
+                    username: form.name.value, 
+                    email: form.email.value, 
+                    password: form.password.value
+                };
+
+                const response = await fetch("/users/", {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    container.innerHTML = ''
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 500);
+                    
+                } else if (response.status === 422) {                    
+                    container.innerHTML = '<p class="error-message">Não foi possível criar a conta. Verifique os dados e tente novamente.</p>'
+                
+                } else if (response.status === 409) {
+                    container.innerHTML = '<p class="error-message">Este email já existe!</p>'
+                
+                } else {
+                    container.innerHTML = '<p class="error-message">Não foi possível criar a conta. Tente mais tarde.</p>'
+                }
+                
+                
+            }
+        </script>
+    </div>
+</body>
+</html>

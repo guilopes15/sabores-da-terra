@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="/static/css/index.css">
+{% endblock %}
+
+
+{% block content %}
+<style>
+    
+</style>
+<div id="products-container"></div>
+<script>   
+    async function loadProducts() {
+        let container = document.getElementById('products-container');    
+             
+        const response = await fetch('/products/filters?offset=0&limit=8'); 
+        const data = await response.json(); 
+
+        if (!data.products || data.products.length === 0) {
+            container.innerHTML = `
+            <p id="erro-message">Nenhum produto disponível para venda no momento!<>
+            `
+        }
+
+        let html = '';
+
+        data.products.forEach(product => {
+            html +=` 
+            <div class='product-card'>
+                <div class='product-name'> ${product.name}</div>
+                <div class='product-description'> ${product.description}</div>
+                <div class='product-price'>R$ ${product.price}</div>
+                <button class="buy-btn" onclick="window.location.href='/product-page/${product.id}'"> Comprar </button> 
+            </div>`;
+            
+        });
+        
+        container.innerHTML= html
+    } 
+
+    window.addEventListener('DOMContentLoaded', loadProducts);
+</script>
+
+{% endblock %}

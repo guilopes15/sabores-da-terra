@@ -1,4 +1,5 @@
 from datetime import datetime
+from http import HTTPStatus
 
 from src.sabores_da_terra.models import User
 
@@ -112,6 +113,7 @@ def test_read_users_with_order(client, user, product, order, admin_token):
                                 'product_id': product.id,
                                 'quantity': 1,
                                 'price': product.price.to_eng_string(),
+                                'product_name': product.name
                             }
                         ],
                     }
@@ -235,3 +237,18 @@ def test_read_users_not_permission(client, token):
         '/users', headers={'Authorization': f'bearer {token}'}
     )
     assert response.json() == {'detail': 'Admin permission required.'}
+
+
+def test_update_user_without_user(client, user):
+    response = client.put(
+        f'/users/{user.id}',
+        json={
+            'username': 'test2',
+            'password': '369258147',
+            'email': 'example@test.com',
+        },
+        headers={},
+    )
+
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}

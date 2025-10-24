@@ -3,16 +3,24 @@ from http import HTTPStatus
 import stripe
 from fastapi import HTTPException
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
-from src.sabores_da_terra.models import Order, Product
+from src.sabores_da_terra.models import Order, OrderItem, Product
 from src.sabores_da_terra.settings import Settings
 
 
 class PaymentController:
     @staticmethod
     async def checkout(order_id, current_user, session):
+        if not current_user:
+            raise HTTPException(
+                status_code=HTTPStatus.UNAUTHORIZED,
+                detail='Could not validate credentials')
+
         db_order = await session.scalar(
-            select(Order).where(
+            select(Order)
+            .options(selectinload(Order.items).selectinload(OrderItem.product))
+            .where(
                 (Order.id == order_id)
                 & (Order.total_amount > 0)
                 & (Order.user_id == current_user.id)
@@ -44,8 +52,8 @@ class PaymentController:
             payment_method_types=['card'],
             line_items=items,
             mode='payment',
-            success_url='http://localhost:8000/sucesso',
-            cancel_url='http://localhost:8000/erro',
+            success_url='http://localhost:8000/payment-success',
+            cancel_url='http://localhost:8000/payment-failure',
             metadata={'order_id': db_order.id},
         )
 
@@ -84,7 +92,7 @@ class PaymentController:
                         db_product = await session.scalar(
                             select(Product).where(
                                 (Product.id == item.product_id)
-                                & Product.is_active
+                                & (Product.is_active)
                             )
                         )
 

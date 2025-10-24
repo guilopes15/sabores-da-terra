@@ -1,0 +1,329 @@
+#orders-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#orders-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e8f5e3;
+}
+
+#order-status {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #6a9c3d;
+    text-align: center;
+    padding: 1rem;
+    background: #f9f6f1;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.order-items-wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    align-items: start;
+    margin-bottom: 2rem;
+}
+
+.order-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.item-card {
+    background: #f9f6f1;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border-left: 4px solid #6a9c3d;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.item-card:hover {
+    box-shadow: 0 4px 12px rgba(106, 156, 61, 0.15);
+    transform: translateX(5px);
+}
+
+.item-card a {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d3436;
+    text-decoration: none;
+    grid-column: 1 / -1;
+    transition: color 0.3s ease;
+}
+
+.item-card a:hover {
+    color: #6a9c3d;
+}
+
+.item-card label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2d3436;
+}
+
+.item-card input[type="number"] {
+    width: 100px;
+    padding: 0.7rem 1rem;
+    border: 2px solid #dfe6e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #2d3436;
+    font-weight: 600;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.item-card input[type="number"]:focus {
+    outline: none;
+    border-color: #6a9c3d;
+    box-shadow: 0 0 0 3px rgba(106, 156, 61, 0.1);
+}
+
+.item-price {
+    grid-column: 1 / -1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #6a9c3d;
+}
+
+#menu-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: sticky;
+    top: 100px;
+}
+
+#menu-options button {
+    width: 100%;
+    padding: 1.2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#update-order-btn {
+    background: linear-gradient(135deg, #f8b739 0%, #f39c12 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(248, 183, 57, 0.3);
+}
+
+#update-order-btn:hover {
+    background: linear-gradient(135deg, #5a8c2d 0%, #4a7c1d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(106, 156, 61, 0.4);
+}
+
+#buy-btn {
+    background: linear-gradient(135deg, #6a9c3d 0%, #5a8c2d 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(106, 156, 61, 0.3);
+}
+   
+#buy-btn:hover {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(248, 183, 57, 0.4);
+}
+
+#del-message {
+    font-size: 1rem;
+    color: #c0392b;
+    text-align: center;
+    font-weight: 600;
+    padding: 1.5rem 1rem;
+    background: linear-gradient(135deg, #ffe8e8 0%, #ffd4d4 100%);
+    border-radius: 12px;
+    border: 2px solid #e74c3c;
+    box-shadow: 0 3px 10px rgba(231, 76, 60, 0.15);
+    margin: 0;
+    line-height: 1.5;
+}
+
+#order-amount {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #2d3436;
+    text-align: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, #e8f5e3 0%, #d4edda 100%);
+    border-radius: 12px;
+    border: 2px solid #6a9c3d;
+}
+
+#info-message {
+    max-width: 1200px;
+    margin: 1rem auto;
+    padding: 0 2rem;
+}
+
+.success-message {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    color: #ffffff;
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+    animation: slideDown 0.3s ease-out;
+}
+
+.error-message {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: #ffffff;
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 992px) {
+    .order-items-wrapper {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    #menu-options {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    #orders-container,
+    #info-message {
+        padding: 1rem;
+    }
+
+    #orders-card {
+        padding: 1.5rem;
+    }
+
+    #order-status {
+        font-size: 1.1rem;
+        padding: 0.8rem;
+    }
+
+    .item-card {
+        padding: 1.2rem;
+        grid-template-columns: 1fr;
+    }
+
+    .item-card a {
+        font-size: 1.1rem;
+    }
+
+    .item-card input[type="number"] {
+        width: 100%;
+    }
+
+    #order-amount {
+        font-size: 1.6rem;
+        padding: 1.2rem;
+    }
+
+    #menu-options button {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    .success-message,
+    .error-message {
+        font-size: 1rem;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #orders-container {
+        margin: 1rem auto;
+    }
+
+    #orders-card {
+        padding: 1.2rem;
+    }
+
+    #order-status {
+        font-size: 1rem;
+    }
+
+    .item-card {
+        padding: 1rem;
+    }
+
+    .item-card a {
+        font-size: 1rem;
+    }
+
+    .item-card label {
+        font-size: 0.9rem;
+    }
+
+    .item-card input[type="number"] {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .item-price {
+        font-size: 1rem;
+    }
+
+    #order-amount {
+        font-size: 1.4rem;
+        padding: 1rem;
+    }
+
+    #menu-options button {
+        padding: 0.9rem;
+        font-size: 0.95rem;
+    }
+
+    #del-message {
+        font-size: 0.85rem;
+    }
+}

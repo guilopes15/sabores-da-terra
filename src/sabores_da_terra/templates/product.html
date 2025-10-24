@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block style %}
+    <link rel="stylesheet" href="/static/css/product.css">
+    <style>
+        .success-message {
+            background: #27ae60 !important;
+            color: white !important;
+            padding: 20px !important;
+            border-radius: 10px !important;
+            text-align: center !important;
+            font-weight: bold !important;
+        }
+
+        .error-message {
+            background: #e74c3c !important;
+            color: white !important;
+            padding: 20px !important;
+            border-radius: 10px !important;
+            text-align: center !important;
+            font-weight: bold !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<div id="product-container">
+    <div class="product-info">
+        <h3 id="name"></h3>
+        <p id="description"></p>
+        <p id="price"></p>
+        <p id="stock-quantity"></p>
+        <label for="quantity">Quantidade:</label>
+        <input type="number" id="quantity" name="quantity" value="1" min="1">
+    </div>
+    <button id="add-to-cart">Adicionar ao carrinho</button>
+    <div id="info-message"></div>
+    
+</div>
+
+<script>
+    var productId = "{{ product_id }}";
+    var container = document.getElementById("info-message");
+
+    async function loadProduct() {    
+        const response = await fetch(`/products/${productId}`);
+        
+        if (!response.ok) {
+            const container = document.getElementById("product-container");
+            container.innerHTML = `<p id="error-message">Produto não encontrado!</p>`
+            return;
+        }
+        
+        const product = await response.json();
+        
+        document.getElementById("name").innerText = product.name;
+        document.getElementById("description").innerText = product.description;
+        document.getElementById("price").innerText = `R$ ${product.price}`;
+        document.getElementById("stock-quantity").innerText = `Estoque restante: ${product.stock_quantity}`;
+    } 
+
+    function showMessage(message, type) {
+        const types = {
+            success: "success-message",
+            error: "error-message"
+        };
+
+        container.innerHTML = `<p class="${types[type]}">${message}</p>`
+        
+        if (type === "success") {
+            setTimeout(() => container.innerHTML = '', 3000);
+        }
+    }
+    
+    async function updateOrder(payload) {
+        const updateResponse = await fetch('/orders/my-orders', {
+            method: 'PUT',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        });
+
+        if (updateResponse.ok) {
+            showMessage("Pedido atualizado com sucesso!", "success");
+            return;
+        
+        } else if (updateResponse.status === 400) {
+            showMessage("Estoque insuficiente! Verifique a quantidade.", "error");
+            return;
+        
+        } else if (updateResponse.status === 422){
+            showMessage("A quantidade não pode ser negativa!", "error");
+            return;
+        }else {
+            showMessage("Produto não encontrado! Atualize a página.", "error");
+            return;    
+        }
+
+    }   
+    
+    async function createOrder(payload) {
+        const createResponse = await fetch("/orders/", {
+            method: 'POST',
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+            body: JSON.stringify(payload)
+
+        });
+
+        if (createResponse.ok) {            
+            showMessage("Pedido criado com sucesso!", "success")               
+            return;
+
+        } else if (createResponse.status === 400) {             
+            showMessage("Stock insuficiente! Verifique a quantitdade.", "error")               
+            return;
+            
+        } else if (createResponse.status === 422){
+            showMessage("A quantidade não pode ser negativa!", "error");
+            return; 
+        
+        } else {                
+            showMessage("Produto não encontrado! Atualize a página.", "error")
+            return;
+        }
+    }
+    
+    async function addOrderItem() {
+        const response = await fetch("/orders/my-orders");
+        const itemQuantity = parseInt(document.getElementById("quantity").value, 10);
+        const payload = {
+            items: [
+                {
+                    product_id: parseInt(productId, 10),
+                    quantity: itemQuantity
+                }
+            ]
+        };
+        
+        if (response.status === 401) {
+            showMessage("Por favor faça Login para continuar!", "error");
+            setTimeout(() => window.location.href = '/login', 3000)
+            return;
+        
+        } else if (response.ok) {
+            await updateOrder(payload);
+            
+        } else {
+            await createOrder(payload);
+        }
+    }
+    
+    document.getElementById("add-to-cart").addEventListener("click", addOrderItem);
+    
+    loadProduct();
+</script>
+{% endblock %}

@@ -21,6 +21,7 @@ class OrderItemPublic(BaseModel):
     product_id: int
     quantity: int
     price: Decimal
+    product_name: str
     model_config = ConfigDict(from_attributes=True)
 
 

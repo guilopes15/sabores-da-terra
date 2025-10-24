@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.sabores_da_terra.controllers.user_controler import UserControler
@@ -54,6 +54,9 @@ async def update_user(
 
 @router.delete('/{user_id}', response_model=Message)
 async def delete_user(
-    user_id: int, session: T_Session, current_user: T_CurrentUser
+    user_id: int,
+    session: T_Session,
+    current_user: T_CurrentUser,
+    response: Response
 ):
-    return await UserControler.delete(user_id, session, current_user)
+    return await UserControler.delete(user_id, session, current_user, response)

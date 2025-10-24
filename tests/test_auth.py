@@ -80,3 +80,37 @@ def test_refresh_token_expire_dont_refresh(client, user):
         )
         assert response.status_code == HTTPStatus.UNAUTHORIZED
         assert response.json() == {'detail': 'Could not validate credentials'}
+
+
+def test_refresh_token_without_user(client):
+    response = client.post('/auth/refresh_token')
+
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}
+
+
+def test_create_cookie_for_login(client, user):
+    response = client.post(
+        '/auth/token',
+        data={'username': user.email, 'password': user.clean_password},
+    )
+
+    cookies = response.cookies
+
+    assert 'access_token' in cookies
+
+    token_value = cookies.get('access_token')
+    assert len(token_value) > 0
+
+    set_cookie = response.headers.get('set-cookie')
+    assert "HttpOnly" in set_cookie
+
+
+def test_refresh_cookie(client, token):
+    response = client.post(
+        '/auth/refresh_token', headers={'Authorization': f'bearer {token}'}
+    )
+
+    cookies = response.cookies
+
+    assert 'access_token' in cookies

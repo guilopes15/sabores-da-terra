@@ -1,4 +1,5 @@
 from datetime import datetime
+from http import HTTPStatus
 
 import pytest
 from sqlalchemy import select
@@ -34,6 +35,7 @@ def test_create_order(client, token, product, mock_db_time):
                 'product_id': product.id,
                 'quantity': 3,
                 'price': product.price.to_eng_string(),
+                'product_name': product.name
             }
         ],
     }
@@ -137,12 +139,13 @@ def test_create_order_already_exists(client, token, product, order):
                 'product_id': product.id,
                 'quantity': order.items[0].quantity,
                 'price': product.price.to_eng_string(),
+                'product_name': product.name
             }
         ],
     }
 
 
-def test_read_order_by_id(client, order):
+def test_read_order_by_id(client, order, product):
     response = client.get(f'/orders/{order.id}')
     time = datetime(2025, 9, 17)
     assert response.json() == {
@@ -159,6 +162,7 @@ def test_read_order_by_id(client, order):
                 'product_id': order.items[0].product_id,
                 'quantity': order.items[0].quantity,
                 'price': order.items[0].price.to_eng_string(),
+                'product_name': product.name
             }
         ],
     }
@@ -169,7 +173,7 @@ def test_read_order_by_id_not_found(client):
     assert response.json() == {'detail': 'Order does not exists.'}
 
 
-def test_read_user_order(client, token, order):
+def test_read_user_order(client, token, order, product):
     response = client.get(
         '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
     )
@@ -188,6 +192,7 @@ def test_read_user_order(client, token, order):
                 'product_id': order.items[0].product_id,
                 'quantity': order.items[0].quantity,
                 'price': order.items[0].price.to_eng_string(),
+                'product_name': product.name
             }
         ],
     }
@@ -414,3 +419,49 @@ async def test_order_zero_amount_after_remove_product(
     await session.refresh(db_order)
 
     assert db_order.total_amount == 0
+
+
+def test_create_order_with_not_user(client, product):
+    response = client.post(
+            '/orders',
+            json={
+                'items': [
+                    {'product_id': product.id, 'quantity': 3}
+                ]
+            },
+            headers={},
+        )
+
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}
+
+
+def test_read_user_order_with_not_user(client, order, product):
+    response = client.get(
+        '/orders/my-orders', headers={}
+    )
+
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}
+
+
+def test_update_orders_with_not_user(client, product):
+    response = client.put(
+        '/orders/my-orders',
+        json={
+            'items': [{'product_id': product.id, 'quantity': 5}]
+        },
+        headers={},
+    )
+
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}
+
+
+def test_delete_order_with_not_user(client, order):
+    response = client.delete(
+        '/orders/my-orders', headers={}
+    )
+
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.json() == {'detail': 'Could not validate credentials'}

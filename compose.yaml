@@ -1,6 +1,6 @@
 services:
   sabores_da_terra_database:
-    image: postgres
+    image: postgres:17
     environment:
       POSTGRES_USER: app_user
       POSTGRES_DB: app_db
