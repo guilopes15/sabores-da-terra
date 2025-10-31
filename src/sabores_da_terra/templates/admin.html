@@ -26,6 +26,7 @@
         container.innerHTML= `<form id="productForm" onsubmit="return createProductSendForm(event)">
             <input type="text" name="name" placeholder="Nome" minlength="1" required>
             <input type="text" name="description" placeholder="Descrição">
+            <input type="text" name="image" placeholder="Imagem">
             <input type="number" name="stock_quantity" placeholder="Quantidade" min="0" step='1' required>
             <input type="number" name="price" placeholder="Preço" min="0.1" step="0.01" required>
             <button type="submit">Criar Produto</button>
@@ -41,7 +42,8 @@
             name: form.name.value, 
             description: form.description.value, 
             stock_quantity: form.stock_quantity.value,
-            price: form.price.value
+            price: form.price.value,
+            image: form.image.value
         };
 
         const response = await fetch("/products/", {
@@ -75,6 +77,7 @@
                 <input type="number" name="id" placeholder="Id" min="1" step="1" required>
                 <input type="text" name="name" minlength="1" placeholder="Nome">
                 <input type="text" name="description" placeholder="Descrição">
+                <input type="text" name="image" placeholder="Imagem">
                 <input type="number" name="stock_quantity" placeholder="Quantidade" min="0" step='1'>
                 <input type="number" name="price" placeholder="Preço" min="0.1" step="0.01">
                 <button type="submit">Atualizar Produto</button>
@@ -91,7 +94,8 @@
         if (form.description.value) data.description = form.description.value;
         if (form.stock_quantity.value) data.stock_quantity = form.stock_quantity.value;
         if (form.price.value) data.price = form.price.value;
-
+        if (form.image.value) data.image = form.image.value;
+        
         const response = await fetch(`/products/${form.id.value}`, {
             method: 'PATCH',
             headers: { "Content-Type": "application/json" },

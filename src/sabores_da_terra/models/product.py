@@ -31,6 +31,7 @@ class Product:
         init=False, server_default=func.now()
     )
     is_active: Mapped[bool] = mapped_column(init=False, default=True)
+    image: Mapped[Optional[str]] = mapped_column(nullable=True, default=None)
     updated_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now(), onupdate=func.now()
     )
@@ -55,7 +56,6 @@ def remove_product_from_pending_orders(mapper, connection, target):
 
         connection.execute(query)
 
-        # Atualiza o total_amount dos pedidos
         query = (
             update(Order)
             .where(Order.status == 'pending')
@@ -73,3 +73,44 @@ def remove_product_from_pending_orders(mapper, connection, target):
         )
 
         connection.execute(query)
+
+
+@event.listens_for(Product, 'after_update')
+def update_price_in_pending_orders(mapper, connection, target):
+    history = attributes.get_history(target, 'price')
+
+    if history.has_changes():
+        connection.execute(
+            update(OrderItem)
+            .where(
+                (OrderItem.product_id == target.id)
+                & (OrderItem.order_id.in_(
+                    select(Order.id).where(Order.status == 'pending')
+                ))
+            )
+            .values(price=target.price)
+        )
+
+        subquery = (
+            select(
+                func.coalesce(
+                    func.sum(OrderItem.quantity * OrderItem.price), 0
+                )
+            )
+            .where(OrderItem.order_id == Order.id)
+            .correlate(Order)
+            .scalar_subquery()
+        )
+
+        connection.execute(
+            update(Order)
+            .where(
+                (Order.status == 'pending')
+                & (Order.id.in_(
+                    select(OrderItem.order_id)
+                    .where(OrderItem.product_id == target.id)
+                    .distinct()
+                ))
+            )
+            .values(total_amount=subquery)
+        )

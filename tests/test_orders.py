@@ -35,7 +35,8 @@ def test_create_order(client, token, product, mock_db_time):
                 'product_id': product.id,
                 'quantity': 3,
                 'price': product.price.to_eng_string(),
-                'product_name': product.name
+                'product_name': product.name,
+                'product_image': product.image
             }
         ],
     }
@@ -139,7 +140,8 @@ def test_create_order_already_exists(client, token, product, order):
                 'product_id': product.id,
                 'quantity': order.items[0].quantity,
                 'price': product.price.to_eng_string(),
-                'product_name': product.name
+                'product_name': product.name,
+                'product_image': product.image
             }
         ],
     }
@@ -162,7 +164,8 @@ def test_read_order_by_id(client, order, product):
                 'product_id': order.items[0].product_id,
                 'quantity': order.items[0].quantity,
                 'price': order.items[0].price.to_eng_string(),
-                'product_name': product.name
+                'product_name': product.name,
+                'product_image': product.image
             }
         ],
     }
@@ -192,7 +195,8 @@ def test_read_user_order(client, token, order, product):
                 'product_id': order.items[0].product_id,
                 'quantity': order.items[0].quantity,
                 'price': order.items[0].price.to_eng_string(),
-                'product_name': product.name
+                'product_name': product.name,
+                'product_image': product.image
             }
         ],
     }
@@ -465,3 +469,23 @@ def test_delete_order_with_not_user(client, order):
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.json() == {'detail': 'Could not validate credentials'}
+
+
+def test_update_order_amount_with_change_product_price(
+        client, order, token, product, admin_token, session
+):
+
+    new_product_price = 95.15
+
+    client.patch(
+        f'/products/{product.id}',
+        headers={'Authorization': f'bearer {admin_token}'},
+        json={'stock_quantity': 25, 'price': new_product_price},
+    )
+    session.expire_all()
+
+    order_response = client.get(
+        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+    )
+
+    assert order_response.json()['total_amount'] == str(new_product_price)

@@ -52,6 +52,7 @@ class OrderController:
                     quantity=item.quantity,
                     price=product.price,
                     product_name=product.name,
+                    product_image=product.image
                 )
 
                 items.append(items_to_add)
@@ -148,15 +149,13 @@ class OrderController:
 
             if order_item:
                 if item.quantity == 0:
-                    db_order.total_amount -= (
-                        order_item.quantity * product.price
-                    )
+
                     await session.delete(order_item)
+                    await session.refresh(db_order, attribute_names=["items"])
 
                 else:
-                    difference = item.quantity - order_item.quantity
-                    db_order.total_amount += product.price * difference
                     order_item.quantity = item.quantity
+                    order_item.price = product.price
 
             elif item.quantity > 0:
                 items_to_add = OrderItem(
@@ -164,11 +163,14 @@ class OrderController:
                     product_id=item.product_id,
                     quantity=item.quantity,
                     price=product.price,
-                    product_name=product.name
+                    product_name=product.name,
+                    product_image=product.image
                 )
 
                 db_order.items.append(items_to_add)
-                db_order.total_amount += product.price * item.quantity
+        db_order.total_amount = sum(
+            item.quantity * item.price for item in db_order.items
+        )
 
         await session.commit()
         await session.refresh(db_order)

@@ -10,6 +10,7 @@ class ProductSchema(BaseModel):
     description: Optional[str] = None
     price: Decimal = Field(gt=0)
     stock_quantity: int = Field(ge=0)
+    image: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -31,3 +32,4 @@ class ProductUpdate(BaseModel):
     price: Decimal | None = Field(default=None, ge=0)
     stock_quantity: int | None = Field(default=None, ge=0)
     description: str | None = None
+    image: str | None = None
