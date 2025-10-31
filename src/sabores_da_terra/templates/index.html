@@ -7,9 +7,6 @@
 
 
 {% block content %}
-<style>
-    
-</style>
 <div id="products-container"></div>
 <script>   
     async function loadProducts() {
@@ -27,11 +24,14 @@
         let html = '';
 
         data.products.forEach(product => {
+            const image = product.image || '/static/product_image.png';
+
             html +=` 
-            <div class='product-card'>
+            <div class='product-card'>             
                 <div class='product-name'> ${product.name}</div>
+                <img class='product-image' src=${image} alt='Imagem do produto'>
                 <div class='product-description'> ${product.description}</div>
-                <div class='product-price'>R$ ${product.price}</div>
+                <div class='product-price'>R$ ${Number(product.price).toFixed(2)}</div>
                 <button class="buy-btn" onclick="window.location.href='/product-page/${product.id}'"> Comprar </button> 
             </div>`;
             

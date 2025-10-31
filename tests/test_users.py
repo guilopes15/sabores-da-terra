@@ -113,7 +113,8 @@ def test_read_users_with_order(client, user, product, order, admin_token):
                                 'product_id': product.id,
                                 'quantity': 1,
                                 'price': product.price.to_eng_string(),
-                                'product_name': product.name
+                                'product_name': product.name,
+                                'product_image': product.image
                             }
                         ],
                     }

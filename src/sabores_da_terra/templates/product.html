@@ -27,14 +27,18 @@
 
 <div id="product-container">
     <div class="product-info">
-        <h3 id="name"></h3>
-        <p id="description"></p>
-        <p id="price"></p>
-        <p id="stock-quantity"></p>
-        <label for="quantity">Quantidade:</label>
-        <input type="number" id="quantity" name="quantity" value="1" min="1">
+        <div id="left-column">
+            <h3 id="name"></h3>
+            <p id="description"></p>
+        </div>
+        <div id="right-column">
+            <p id="price"></p>
+            <p id="stock-quantity"></p>
+            <label for="quantity">Quantidade:</label>
+            <input type="number" id="quantity" name="quantity" value="1" min="1">
+            <button id="add-to-cart">Adicionar ao carrinho</button>
+        </div>
     </div>
-    <button id="add-to-cart">Adicionar ao carrinho</button>
     <div id="info-message"></div>
     
 </div>
@@ -54,9 +58,17 @@
         
         const product = await response.json();
         
-        document.getElementById("name").innerText = product.name;
+        const img = document.createElement('img');
+        img.classList.add('product-image');
+        img.src = product.image || '/static/product_image.png'; // 👈 se null, usa imagem padrão
+        img.alt = 'Imagem do produto';
+
+        const nameElement = document.getElementById("name");
+        nameElement.insertAdjacentElement("afterend", img);
+
+        nameElement.innerText = product.name;
         document.getElementById("description").innerText = product.description;
-        document.getElementById("price").innerText = `R$ ${product.price}`;
+        document.getElementById("price").innerText = `R$ ${Number(product.price).toFixed(2)}`;
         document.getElementById("stock-quantity").innerText = `Estoque restante: ${product.stock_quantity}`;
     } 
 

@@ -23,7 +23,7 @@
                     <a href="/product-page/${item.product_id}">${item.product_name}</a>            
                     <label for="quantity-${item.product_id}">Quantidade:</label>
                     <input type="number" id="quantity-${item.product_id}" name="quantity" value="${item.quantity}" min="0">
-                    <div class="item-price">Preço unitario ${item.price}</div>
+                    <div class="item-price">Preço unitario: R$ ${Number(item.price).toFixed(2)}</div>
                 </div>
             `).join('');
                 
@@ -37,7 +37,7 @@
                         <div id="menu-options">
                             <button id="update-order-btn">Atualizar pedido</button>
                             <button id="buy-btn">Comprar</button>
-                            <p id="order-amount">Total: R$ ${order.total_amount}</p>
+                            <p id="order-amount">Total: R$ ${Number(order.total_amount).toFixed(2)}</p>
                             <p id="del-message">Para remover algum produto, basta definir a quantidade para 0 e clicar em Atualizar Pedido.</p>
                         </div>
                     </div>

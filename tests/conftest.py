@@ -103,7 +103,13 @@ async def admin(session, mock_db_time):
 @pytest_asyncio.fixture
 async def product(session, mock_db_time):
     with mock_db_time(model=Product, time=datetime(2025, 9, 17)):
-        db_product = Product(name='uva', price=25.50, stock_quantity=8)
+        db_product = Product(
+            name='uva',
+            price=25.50,
+            stock_quantity=8,
+            image='productimage@href.com'
+        )
+
         session.add(db_product)
         await session.commit()
         await session.refresh(db_product)
@@ -186,7 +192,8 @@ async def order(session, mock_db_time, product, user):
             product_id=product.id,
             quantity=1,
             price=product.price,
-            product_name=product.name
+            product_name=product.name,
+            product_image=product.image
         )
         session.add(order_items)
         db_order.total_amount = product.price * order_items.quantity
