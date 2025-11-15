@@ -13,3 +13,6 @@ class Settings(BaseSettings):
     STRIPE_API_KEY: str
     WEBHOOK_SECRET: str
     ADMIN_SECRET: str
+    TELEGRAM_API_ID: int
+    TELEGRAM_API_HASH: str
+    TELEGRAM_BOT_TOKEN: str

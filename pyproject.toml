@@ -13,15 +13,20 @@ dependencies = [
     "pydantic-settings (>=2.10.1,<3.0.0)",
     "psycopg[binary] (>=3.2.9,<4.0.0)",
     "alembic (>=1.16.5,<2.0.0)",
-    "testcontainers (>=4.12.0,<5.0.0)",
     "pytest-asyncio (>=1.1.0,<2.0.0)",
     "pyjwt (>=2.10.1,<3.0.0)",
     "pwdlib[argon2] (>=0.2.1,<0.3.0)",
     "stripe (>=12.5.1,<13.0.0)",
+    "pyrogram (>=2.0.106,<3.0.0)",
+    "tgcrypto (>=1.2.5,<2.0.0)",
+    "pyromod (>=3.1.6,<4.0.0)",
 ]
 
 [tool.poetry]
-packages = [{include = "sabores_da_terra", from = "src"}]
+packages = [
+    {include = "sabores_da_terra", from = "src"},
+    {include = "sabores_da_terra_bot", from = "src"}
+]
 
 
 [tool.poetry.group.dev.dependencies]
@@ -31,6 +36,7 @@ ruff = "^0.12.11"
 pytest = "^8.4.2"
 freezegun = "^1.5.5"
 pytest-cov = "^7.0.0"
+testcontainers = "^4.13.3"
 
 [tool.ruff]
 line-length = 79
