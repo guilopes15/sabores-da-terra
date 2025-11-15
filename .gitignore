@@ -179,3 +179,5 @@ pyrightconfig.json
 
 .hypothesis
 .pytest_cache
+my_account.session
+Sabores_da_terra_bot.session
