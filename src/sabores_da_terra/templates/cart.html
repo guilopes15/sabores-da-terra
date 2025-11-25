@@ -7,11 +7,12 @@
 {% block content %}
 <div id="info-message"></div>
 <div id="orders-container"></div>
-
+<button id="del-order-btn">Excluir Pedido</button>
 <script>
+    var infoContainer = document.getElementById('info-message');
+    
     async function loadOrders() {
         let orderContainer = document.getElementById('orders-container');
-        let infoContainer = document.getElementById('info-message');
         
         const response = await fetch('/orders/my-orders');
         const order = await response.json();
@@ -111,11 +112,21 @@
         } else {
             orderContainer.innerHTML = '<p class="error-message">Nenhum pedido à pagar!</p>'
             
-        }
-        
+        }       
     } 
 
-    window.addEventListener('DOMContentLoaded', loadOrders); 
+    window.addEventListener('DOMContentLoaded', loadOrders);
+    document.getElementById("del-order-btn").addEventListener("click", async () => {
+        const response = await fetch('/orders/my-orders', {
+            method: "DELETE"
+        });
+
+        if (response.ok) {
+            infoContainer.innerHTML = '<p class="success-message">Pedido excluido com sucesso!</p>';                   
+            setTimeout(() => loadOrders(), 1000);
+            setTimeout(() => infoContainer.innerHTML = '', 5000) 
+        }
+    });
 
 </script>
 {% endblock %}

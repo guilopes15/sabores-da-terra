@@ -5,22 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/static/css/base.css">
-    {% block style %} {% endblock %}
-    <title>Sabores da Terra</title>
+    {% block style %} 
     
+    {% endblock %}
+    <title>Sabores da Terra</title>   
 </head>
 <body>
     <header>
-        <a href="/home" class="logo"> Sabores da terra </a>
-          
+        <a href="/home" class="logo"> Sabores da terra </a>         
         <div class="search_bar">
-            <input type="text" id="input-bar" placeholder="Procure o produto que deseja ...">
+            <form id="search-form" onsubmit="return searchProducts(event)">
+                <input type="text" name="input-bar" id="input-bar" placeholder="Procure o produto que deseja ...">
+                <button id="search-btn">
+                    <img src="/static/lupa.png" alt="logo lupa" title="lupa">
+                </button>
+            </form>
         </div>
-        <div id="error-box"></div>
-        <button id="search-btn">
-            <img src="/static/lupa.png" alt="logo lupa" title="lupa">
-        </button>
-        
+        <div id="error-box">
+        </div>           
         <div class="menu">
             {% if user %}    
                 {% block auth %}
@@ -43,7 +45,7 @@
                     Entrar
                 </button>
                 
-            {% endif %}
+            {% endif %}       
         
         </div>
         <div id="cart">
@@ -52,34 +54,37 @@
                 
             </button>
         </div>
-        <div class="media">
-            
+        <div class="media">         
             <img src="/static/whatsapp.png" alt="logo whatsapp" title="(21) 99999-9999">
             <img src="/static/instagram.png" alt="logo instagram" title="Instagram">
         </div>
-        <script>
-            document.getElementById("search-btn").addEventListener("click", async () => {
-
-            const inputBar = document.getElementById('input-bar').value.trim();
-            const response = await fetch(`/products/filters?name=${inputBar}`);
-            const data = await response.json();
-            
-            if (!data.products || data.products.length === 0) {
-                let container = document.getElementById("error-box");
-                container.innerHTML = `
-                    <p class="error-message">Produto não encontrado!</p>
-                `
-                setTimeout(() => {
-                    container.innerHTML = '';
-                    }, 3000);
-                    
+        <script>         
+            async function searchProducts(event) {
+                event.preventDefault();
+                
+                const inputValue = document.getElementById("input-bar").value.trim();
+                
+                if (!inputValue) {
                     return;
                 }
-            
-            window.location.href = `/product-page/${data.products[0].id}`
-        });
-
-
+                
+                const response = await fetch(`/products/filters?name=${inputValue}`);
+                const data = await response.json();
+                
+                if (!data.products || data.products.length === 0) {
+                    let container = document.getElementById("error-box");
+                    container.innerHTML = `
+                        <p class="error-message">Produto não encontrado!</p>
+                    `
+                    setTimeout(() => {
+                        container.innerHTML = '';
+                        }, 3000);
+                        
+                        return;
+                    }
+                
+                window.location.href = `/product-page/${data.products[0].id}`
+            }      
         </script>
     </header>
 

@@ -133,6 +133,18 @@
     letter-spacing: 0.5px;
 }
 
+#buy-btn {
+    background: linear-gradient(135deg, #6a9c3d 0%, #5a8c2d 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(106, 156, 61, 0.3);
+}
+
+#buy-btn:hover {
+    background: linear-gradient(135deg, #5a8c2d 0%, #4a7c1d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(106, 156, 61, 0.4);
+}
+
 #update-order-btn {
     background: linear-gradient(135deg, #f8b739 0%, #f39c12 100%);
     color: #ffffff;
@@ -140,29 +152,37 @@
 }
 
 #update-order-btn:hover {
-    background: linear-gradient(135deg, #5a8c2d 0%, #4a7c1d 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(106, 156, 61, 0.4);
-}
-
-#buy-btn {
-    background: linear-gradient(135deg, #6a9c3d 0%, #5a8c2d 100%);
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(106, 156, 61, 0.3);
-}
-   
-#buy-btn:hover {
     background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(248, 183, 57, 0.4);
 }
 
+#del-order-btn {
+    background: linear-gradient(135deg, #e62e1a 0%, #e02e1a 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(217, 39, 62, 0.3);
+    width: 86%;
+    padding: 1.2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    display: block;
+    margin: 0 auto; 
+
+}
+
 #del-message {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #c0392b;
     text-align: center;
     font-weight: 600;
-    padding: 1.5rem 1rem;
+    padding: 1.2rem 1rem;
     background: linear-gradient(135deg, #ffe8e8 0%, #ffd4d4 100%);
     border-radius: 12px;
     border: 2px solid #e74c3c;
@@ -171,12 +191,13 @@
     line-height: 1.5;
 }
 
+
 #order-amount {
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 900;
     color: #2d3436;
     text-align: center;
-    padding: 1rem;
+    padding: 1.5rem;
     background: linear-gradient(135deg, #e8f5e3 0%, #d4edda 100%);
     border-radius: 12px;
     border: 2px solid #6a9c3d;
@@ -201,7 +222,7 @@
 }
 
 .error-message {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    background: linear-gradient(135deg, #e62e1a 0%, #e02e1a 100%);
     color: #ffffff;
     padding: 1.2rem 1.5rem;
     border-radius: 12px;
