@@ -13,6 +13,11 @@ body {
     flex-direction: column;
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
 header {
     background: linear-gradient(135deg, #6a9c3d 0%, #4a7c2d 100%);
     padding: 1.2rem 2rem;
@@ -24,7 +29,6 @@ header {
     position: sticky;
     top: 0;
     z-index: 1000;
-
 }
 
 .logo {
@@ -48,8 +52,14 @@ header {
     position: relative;
 }
 
+#search-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
 .search_bar input {
-    width: 100%;
+    flex: 1;
     padding: 0.9rem 1.5rem;
     border: none;
     border-radius: 50px;
@@ -68,31 +78,6 @@ header {
 .search_bar input::placeholder {
     color: #95a5a6;
 }
-
-#error-box {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 0.5rem;
-    z-index: 999;
-    width: 100%;
-    max-width: 500px;
-}
-
-.error-message {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-    color: #ffffff;
-    padding: 0.8rem 1.5rem;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-    animation: slideDown 0.3s ease-out;
-}
-
-
 
 #search-btn {
     background-color: #ffffff;
@@ -119,6 +104,38 @@ header {
     width: 20px;
     height: 20px;
     filter: brightness(0) saturate(100%) invert(37%) sepia(64%) saturate(548%) hue-rotate(59deg) brightness(94%) contrast(88%);
+}
+
+#error-box {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.5rem;
+    z-index: 999;
+    width: 100%;
+}
+
+.error-message {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .menu {
@@ -191,7 +208,6 @@ header {
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 0.5rem;
-    position: relative;
 }
 
 #cart-btn:hover {
@@ -210,7 +226,6 @@ header {
     display: flex;
     gap: 0.8rem;
     align-items: center;
-    
 }
 
 .media img {
@@ -236,10 +251,9 @@ main {
 footer {
     background: linear-gradient(135deg, #4a7c2d 0%, #3a6c1d 100%);
     color: #ffffff;
-    padding: 0.2rem 1rem 0.2rem;
+    padding: 0.8rem 2rem 0.5rem;
     margin-top: auto;
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-    font-size: 0.9rem;
 }
 
 .footer-content {
@@ -248,19 +262,17 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 1.5rem;
+    gap: 2rem;
     margin-bottom: 0.5rem;
-    padding: 0.02rem 0.2rem;
 }
 
 .footer-section {
     flex: 1;
-
 }
 
 .footer-section h3 {
     font-size: 1rem;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.5rem;
     color: #ffffff;
     font-weight: 700;
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
@@ -268,15 +280,15 @@ footer {
 }
 
 .footer-section p {
-    font-size: 0.8rem;
-    line-height: 1.4;
+    font-size: 0.85rem;
+    line-height: 1.5;
     color: rgba(255, 255, 255, 0.9);
 }
 
 .footer-section ul {
     list-style: none;
-    font-size: 0.8rem;
-    line-height: 1.4;
+    font-size: 0.85rem;
+    line-height: 1.5;
     color: rgba(255, 255, 255, 0.9);
 }
 
@@ -310,55 +322,24 @@ footer {
 .footer-social img {
     width: 16px;
     height: 16px;
-    margin-left: 0.3rem;
     filter: brightness(0) invert(1);
 }
 
 .footer-bottom {
     text-align: center;
-    padding-top: 0.5rem;
+    padding: 0.5rem 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.8);
     display: flex;
-    justify-content: center;  /* centraliza horizontalmente */
-    align-items: center;      /* alinha verticalmente */
-    gap: 3rem;                /* espaço entre os <p> */
-    padding: 0.2rem 1rem;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
 }
 
 .footer-bottom p {
-    margin: 0.1rem 0;
-}
-
-@media (max-width: 768px) {
-    footer {
-        padding: 0.8rem 1rem 0.5rem;
-    }
-
-    .footer-content {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .footer-section h3 {
-        font-size: 0.95rem;
-    }
-
-    .footer-section p,
-    .footer-section ul {
-        font-size: 0.75rem;
-    }
-
-    .footer-social {
-        margin-left: 0;
-        margin-top: 0.3rem;
-    }
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
+    margin: 0;
 }
 
 @media (max-width: 1024px) {
@@ -372,10 +353,6 @@ a {
         flex: 1 1 100%;
         max-width: 100%;
     }
-
-    #search-btn {
-        order: 6;
-    }
 }
 
 @media (max-width: 768px) {
@@ -386,6 +363,10 @@ a {
     
     .logo {
         font-size: 1.4rem;
+    }
+
+    #search-form {
+        flex-wrap: wrap;
     }
     
     .btn-login,
@@ -414,6 +395,43 @@ a {
     
     main {
         padding: 1rem;
+    }
+
+    #error-box {
+        left: 0;
+    }
+
+    .error-message {
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    footer {
+        padding: 0.8rem 1rem 0.5rem;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .footer-section h3 {
+        font-size: 0.95rem;
+    }
+
+    .footer-section p,
+    .footer-section ul {
+        font-size: 0.8rem;
+    }
+
+    .footer-social {
+        margin-left: 0;
+        margin-top: 0.3rem;
+    }
+
+    .footer-bottom {
+        gap: 1rem;
+        font-size: 0.75rem;
     }
 }
 
@@ -447,31 +465,14 @@ a {
         width: 30px;
         height: 30px;
     }
-}
-@media (max-width: 768px) {
-    #error-box {
-        max-width: 100%;
-    }
 
-    .error-message {
-        padding: 0.7rem 1rem;
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 480px) {
     .error-message {
         padding: 0.6rem 0.8rem;
         font-size: 0.8rem;
     }
-}
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }
