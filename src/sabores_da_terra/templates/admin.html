@@ -9,10 +9,15 @@
      
 <div id="admin-panel-container">
     <div id="menu">
-        <button id="create-product-btn">Criar Produto</button>
-        <button id="search-products-btn">Buscar Produtos</button>
-        <button id="update-product-btn">Atualizar Produto</button>
-        <button id="delete-product-btn">Deletar Produto</button>        
+        <div id="product-menu">
+            <button id="create-product-btn">Criar Produto</button>
+            <button id="search-products-btn">Buscar Produtos</button>
+            <button id="update-product-btn">Atualizar Produto</button>
+            <button id="delete-product-btn">Deletar Produto</button>
+        </div>
+        <div id="order-menu">
+            <button id="register-order">Registar Venda Manual</button>
+        </div>                
     </div>
     <div id="chosen-option-content"></div>
     <div id="info-message"></div>
@@ -20,7 +25,10 @@
 <script>
     var container = document.getElementById('chosen-option-content');
     var infoContainer = document.getElementById('info-message');
-    
+    var order = new Map();
+    order.set("items", []);
+    order.set("status", "paid"); 
+
     async function createProductForm() {
  
         container.innerHTML= `<form id="productForm" onsubmit="return createProductSendForm(event)">
@@ -53,7 +61,7 @@
         });
 
         if (response.ok) {
-            infoContainer.innerHTML = '<p class="sucess-message">Produto criado com sucesso!</p>'
+            infoContainer.innerHTML = '<p class="success-message">Produto criado com sucesso!</p>'
             setTimeout(() => infoContainer.innerHTML = '', 5000)
             form.reset();
             return;
@@ -103,7 +111,7 @@
         });
 
         if (response.ok) {
-            infoContainer.innerHTML = '<p class="sucess-message">Produto atualizado com sucesso!</p>'
+            infoContainer.innerHTML = '<p class="success-message">Produto atualizado com sucesso!</p>'
             form.reset();
             setTimeout(() => infoContainer.innerHTML = '', 5000)
             return;
@@ -220,6 +228,84 @@
         
     }
 
+    async function createOrder() {
+        order.set("items", []);
+        container.innerHTML = `
+            <input type="number" id="product-id" name="id" placeholder="Id do produto" min="1" step="1"  required>
+            <input type="number" id="product-quantity" name="quantity" placeholder="Quantidade Vendida" min="1" step="1" required>
+            <button onclick="addProduct()">Adicionar Produto</button>
+            <button onclick="createManualOrder()">Registrar Venda</button>
+        `;
+    }
+    
+    async function addProduct() {
+        const productId = document.getElementById("product-id");
+        const productQuantity = document.getElementById("product-quantity");
+
+        if (!productId.value || !productQuantity.value) {
+            infoContainer.innerHTML = '<p class="error-message">Preencha Id e Quantidade antes de adicionar.</p>';
+            return;
+        }
+        
+        const items = order.get("items");
+
+        items.push({
+            product_id: parseInt(productId.value), 
+            quantity: parseInt(productQuantity.value)
+        });
+        
+        infoContainer.innerHTML = '<p class="success-message">Produto adicionado ao pedido.</p>'; 
+        setTimeout(() => infoContainer.innerHTML = '', 3000);
+        productId.value = ''
+        productQuantity.value = ''
+        
+    }
+
+    async function createManualOrder() {
+        let response;
+        
+        if (order.get("items").length > 0) {  
+            response = await fetch('/orders/', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(Object.fromEntries(order))
+            });
+        
+        } else {
+            infoContainer.innerHTML = '<p class="error-message">Nenhum produto para adicionar!</p>'
+            return;
+        }
+       
+        if (response.ok) {
+            const myOrder = await fetch('/orders/my-orders');
+
+            if (myOrder.ok) {
+                order.set("items", []);
+                infoContainer.innerHTML = '<p class="error-message">Erro ao criar Pedido! Lista apagada! Clique em excluir pedido no carrinho e tente novamente!</p>'
+
+            } else {      
+                order.set("items", []);
+                infoContainer.innerHTML = '<p class="success-message">Pedido criado com sucesso!</p>'               
+                return;           
+            }
+                      
+        } else if (response.status === 404) {
+            order.set("items", []);
+            infoContainer.innerHTML = '<p class="error-message">Algum produto adicionado não existe! Lista apagada! Verifique o Id e tente novamente!</p>'
+            
+
+        } else if (response.status === 400) {
+            order.set("items", []);
+            infoContainer.innerHTML = '<p class="error-message">Algum produto não possui estoque suficiente! Lista apagada! Verifique e tente novamente!</p>'           
+
+        } else {
+            infoContainer.innerHTML = '<p class="error-message">Sua sessão expirou! Redirecionando para página de login ...</p>'
+            window.location.href = '/login';
+            return;
+        }
+    }
+
+    document.getElementById("register-order").addEventListener("click", createOrder);
     document.getElementById("create-product-btn").addEventListener("click", createProductForm);
     document.getElementById("update-product-btn").addEventListener("click", updateProductForm);
     document.getElementById("delete-product-btn").addEventListener("click", deleteProduct);

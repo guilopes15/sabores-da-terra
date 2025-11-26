@@ -60,7 +60,7 @@
         
         const img = document.createElement('img');
         img.classList.add('product-image');
-        img.src = product.image || '/static/product_image.png'; // 👈 se null, usa imagem padrão
+        img.src = product.image || '/static/product_image.png'; // se null, usa imagem padrão
         img.alt = 'Imagem do produto';
 
         const nameElement = document.getElementById("name");
