@@ -24,11 +24,12 @@
         <div id="error-box">
         </div>           
         <div class="menu">
+            {% block auth %}
+                
+            {% endblock %}
+            
             {% if user %}    
-                {% block auth %}
-                
-                {% endblock %}
-                
+                              
                 <button class="btn-profile" onclick="window.location.href='/perfil'">
                     Meu perfil
                 </button>

@@ -42,6 +42,42 @@ def test_create_order(client, token, product, mock_db_time):
     }
 
 
+def test_create_paid_order(client, token, product, mock_db_time):
+    with mock_db_time(model=Order, event_name='before_update') as time:
+        item_quantity = 3
+
+        response = client.post(
+            '/orders',
+            json={
+                'status': 'paid',
+                'items': [
+                    {'product_id': product.id, 'quantity': item_quantity}
+                ]
+            },
+            headers={'Authorization': f'bearer {token}'},
+        )
+
+    assert response.json() == {
+        'id': 1,
+        'user_id': 1,
+        'total_amount': (item_quantity * product.price).to_eng_string(),
+        'status': 'paid',
+        'created_at': time.isoformat(),
+        'updated_at': time.isoformat(),
+        'items': [
+            {
+                'id': 1,
+                'order_id': 1,
+                'product_id': product.id,
+                'quantity': 3,
+                'price': product.price.to_eng_string(),
+                'product_name': product.name,
+                'product_image': product.image
+            }
+        ],
+    }
+
+
 def test_create_order_without_product(client, token):
     item_quantity = 5
 

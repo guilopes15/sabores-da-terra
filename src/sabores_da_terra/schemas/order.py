@@ -13,6 +13,7 @@ class OrderItemSchema(BaseModel):
 
 
 class OrderSchema(BaseModel):
+    status: OrderStatus = Field(default='pending')
     items: list[OrderItemSchema]
 
 

@@ -21,7 +21,11 @@ class OrderController:
         if db_order and db_order.status == 'pending':
             return db_order
 
-        db_order = Order(user_id=current_user.id, total_amount=0)
+        db_order = Order(
+            user_id=current_user.id,
+            total_amount=0,
+            status=order_data.status
+        )
         session.add(db_order)
         await session.flush()
 

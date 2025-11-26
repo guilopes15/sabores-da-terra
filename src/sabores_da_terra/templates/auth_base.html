@@ -5,7 +5,8 @@
 <script>
     window.addEventListener('DOMContentLoaded', async () => {
         const response = await fetch("/auth/refresh_token", {
-            method: 'POST'
+            method: 'POST',
+
         });
         if (!response.ok) {
             window.location.href = '/login';

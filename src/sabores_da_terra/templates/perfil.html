@@ -37,7 +37,7 @@
         const response = await fetch(`/users/${userId}`);
         if (!response.ok) {
             
-            perfilContainer.innerHTML = `<p class="error-message">Usuario não existe! Você sera<>`
+            perfilContainer.innerHTML = `<p class="error-message">Usuario não existe! Você será redirecionado...`
             
             setTimeout(() => window.location.href = '/login', 3000);
             
