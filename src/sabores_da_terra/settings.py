@@ -16,3 +16,6 @@ class Settings(BaseSettings):
     TELEGRAM_API_ID: int
     TELEGRAM_API_HASH: str
     TELEGRAM_BOT_TOKEN: str
+    EMAIL_SENDER: str
+    EMAIL_RECIPIENT: str
+    SMTP_PASSWORD: str
