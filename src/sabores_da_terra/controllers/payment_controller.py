@@ -3,9 +3,11 @@ from http import HTTPStatus
 import stripe
 from fastapi import HTTPException
 from sqlalchemy import select
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import selectinload
 
 from src.sabores_da_terra.models import Order, OrderItem, Product
+from src.sabores_da_terra.notification import send_email
 from src.sabores_da_terra.settings import Settings
 
 
@@ -81,10 +83,14 @@ class PaymentController:
             if session_data['payment_status'] == 'paid':
                 order_id = session_data['metadata'].get('order_id')
 
-                if order_id:
-                    db_order = await session.scalar(
-                        select(Order).where(Order.id == int(order_id))
+                try:
+                    result = await session.execute(
+                        select(Order)
+                        .options(selectinload(Order.items))
+                        .where(Order.id == int(order_id))
                     )
+
+                    db_order = result.scalar_one_or_none()
 
                     db_order.status = 'paid'
 
@@ -98,10 +104,43 @@ class PaymentController:
 
                         if db_product:
                             db_product.stock_quantity = max(
-                                db_product.stock_quantity - item.quantity, 0
+                            db_product.stock_quantity - item.quantity, 0
                             )
 
                     await session.commit()
+                    await session.refresh(db_order)
+
+                except (AttributeError, TypeError):
+                    await send_email(
+                        sender=Settings().EMAIL_SENDER,
+                        recipient=Settings().EMAIL_RECIPIENT,
+                        smtp_password=Settings().SMTP_PASSWORD,
+                        custom_message='''
+                        Pedido não foi encontrado! Verifique o Sistema
+                        de Pagamento.'''
+                    )
+
+                except OperationalError:
+                    await send_email(
+                        sender=Settings().EMAIL_SENDER,
+                        recipient=Settings().EMAIL_RECIPIENT,
+                        smtp_password=Settings().SMTP_PASSWORD,
+                        custom_message='Banco de dados não responde!'
+                    )
+
+                else:
+                    email_data = {
+                        'id': db_order.id,
+                        'user_id': db_order.user_id,
+                        'total': db_order.total_amount,
+                        'time': db_order.updated_at}
+
+                    await send_email(
+                        sender=Settings().EMAIL_SENDER,
+                        recipient=Settings().EMAIL_RECIPIENT,
+                        smtp_password=Settings().SMTP_PASSWORD,
+                        order_data=email_data
+                    )
 
                     return {'message': 'Order processed successfully.'}
 

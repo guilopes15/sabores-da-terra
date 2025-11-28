@@ -27,7 +27,10 @@ jobs:
       TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
       TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+      EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+    
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
