@@ -12,7 +12,6 @@ async def send_email(
         email_body = custom_message
 
     elif order_data:
-
         date_time = order_data['time'] - timedelta(hours=3)
 
         email_body = f'''
@@ -21,6 +20,9 @@ async def send_email(
         no valor de R${order_data['total']}
         ás {date_time.strftime('%H:%M:%S do dia %d/%m/%Y')}.
         '''
+
+    else:
+        return
 
     msg = EmailMessage()
 
