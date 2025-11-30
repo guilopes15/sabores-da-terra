@@ -16,7 +16,11 @@
             <button id="delete-product-btn">Deletar Produto</button>
         </div>
         <div id="order-menu">
+            <button id="search-order" onclick="searchOrder()">Buscar Pedidos</button>
             <button id="register-order">Registar Venda Manual</button>
+        </div>
+        <div id="user-menu">
+            <button id="seach-user" onclick="searchUser()">Buscar clientes</button>
         </div>                
     </div>
     <div id="chosen-option-content"></div>
@@ -305,6 +309,89 @@
         }
     }
 
+    async function searchOrder() {
+        container.innerHTML = `
+        <input type="number" id="order-id" name="id" placeholder="Id do pedido" min="1" step="1" required>
+        <button id="search-order-btn">Buscar</button>
+        `;
+        
+        document.getElementById("search-order-btn").addEventListener("click", async () => {
+
+            const orderId = document.getElementById('order-id').value;
+
+            const response = await fetch(`/orders/${orderId}`, {
+                method: "GET",
+                headers: {"Content-Type": "application/json"}
+            });
+
+            
+            if (response.ok) {
+                const data = await response.json();
+
+                let html = `
+                <h2>Pedido:<h3>
+                <div class='order-card'>
+                    <p>Id: ${data.id}</p>
+                    <p>Cliente: ${data.user_id}</p>
+                    <p>Total: R$${data.total_amount}</p>
+                    <p>Status: ${data.status}</p>
+                </div>
+                <h2>Produtos:</h3>
+                <br>
+                `;
+
+                data.items.forEach(product => {
+                    html +=` 
+                    <div class='product-card'>
+                        <p>Id: ${product.id}</p>
+                        <p>Nome: ${product.product_name}</p>
+                        <p>Preço: R$ ${product.price}</p>
+                    </div>`;
+                    
+                });
+                
+                container.innerHTML = html
+
+            } else {
+                infoContainer.innerHTML = '<p class="error-message">Pedido não encontrado!</p>' 
+                setTimeout(() => infoContainer.innerHTML = '', 4000);
+            }
+        });
+        
+    }
+
+    async function searchUser() {
+        container.innerHTML = `
+        <input type="number" id="user-id" name="id" placeholder="Id do Cliente" min="1" step="1" required>
+        <button id="search-user-btn">Buscar</button>
+        `;
+        
+        document.getElementById("search-user-btn").addEventListener("click", async () => {
+            const userId = document.getElementById("user-id").value;
+            const response = await fetch(`/users/${userId}`, {
+                method: "GET",
+                headers: {"Content-Type": "application/json"}
+            })
+            
+            if (response.ok) {
+                const data = await response.json();
+
+                container.innerHTML = `
+                <h2>Cliente:</h2>
+                <div id="user-card">
+                    <p>Id: ${data.id}</p>
+                    <p>Username: ${data.username}</p>
+                    <p>Email: ${data.email}</p>
+                </div>
+                `;
+
+            } else {
+                infoContainer.innerHTML = '<p class="error-message">Cliente não encontrado!</p>' 
+                setTimeout(() => infoContainer.innerHTML = '', 4000);
+            }
+        
+        });
+    }
     document.getElementById("register-order").addEventListener("click", createOrder);
     document.getElementById("create-product-btn").addEventListener("click", createProductForm);
     document.getElementById("update-product-btn").addEventListener("click", updateProductForm);
