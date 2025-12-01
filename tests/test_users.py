@@ -7,7 +7,7 @@ from src.sabores_da_terra.models import User
 def test_create_user(client, mock_db_time):
     with mock_db_time(model=User) as time:
         response = client.post(
-            '/users',
+            '/api/users',
             json={
                 'email': '0@a.com',
                 'password': '0000000',
@@ -27,7 +27,7 @@ def test_create_user(client, mock_db_time):
 
 def test_create_user_existent(client, user):
     response = client.post(
-        '/users',
+        '/api/users',
         json={'username': 'test', 'email': user.email, 'password': '147258'},
     )
     assert response.json() == {'detail': 'Email already exists.'}
@@ -36,7 +36,7 @@ def test_create_user_existent(client, user):
 def test_read_users(client, admin_token):
     time = datetime(2025, 9, 17)
     response = client.get(
-        '/users', headers={'Authorization': f'bearer {admin_token}'}
+        '/api/users', headers={'Authorization': f'bearer {admin_token}'}
     )
     assert response.json() == {
         'users': [
@@ -56,7 +56,7 @@ def test_read_users(client, admin_token):
 def test_read_users_with_users(client, user, admin_token):
     time = datetime(2025, 9, 17)
     response = client.get(
-        '/users', headers={'Authorization': f'bearer {admin_token}'}
+        '/api/users', headers={'Authorization': f'bearer {admin_token}'}
     )
 
     assert response.json() == {
@@ -86,7 +86,7 @@ def test_read_users_with_users(client, user, admin_token):
 def test_read_users_with_order(client, user, product, order, admin_token):
     time = datetime(2025, 9, 17)
     response = client.get(
-        '/users', headers={'Authorization': f'bearer {admin_token}'}
+        '/api/users', headers={'Authorization': f'bearer {admin_token}'}
     )
 
     assert response.json() == {
@@ -135,7 +135,8 @@ def test_read_users_with_order(client, user, product, order, admin_token):
 
 def test_read_user_by_id(client, user, admin_token):
     response = client.get(
-        f'/users/{user.id}', headers={'Authorization': f'bearer {admin_token}'}
+        f'/api/users/{user.id}',
+        headers={'Authorization': f'bearer {admin_token}'}
     )
 
     assert response.json() == {
@@ -151,28 +152,28 @@ def test_read_user_by_id(client, user, admin_token):
 
 def test_read_user_by_id_wrong_user(client, user, admin_token):
     response = client.get(
-        '/users/99', headers={'Authorization': f'bearer {admin_token}'}
+        '/api/users/99', headers={'Authorization': f'bearer {admin_token}'}
     )
     assert response.json() == {'detail': 'User does not exists.'}
 
 
 def test_delete_user(client, user, token):
     response = client.delete(
-        f'/users/{user.id}', headers={'Authorization': f'bearer {token}'}
+        f'/api/users/{user.id}', headers={'Authorization': f'bearer {token}'}
     )
     assert response.json() == {'message': 'User deleted'}
 
 
 def test_delete_user_not_found(client, user, token):
     response = client.delete(
-        '/users/999', headers={'Authorization': f'bearer {token}'}
+        '/api/users/999', headers={'Authorization': f'bearer {token}'}
     )
     assert response.json() == {'detail': 'Not enough permission.'}
 
 
 def test_update_user(client, user, token):
     response = client.put(
-        f'/users/{user.id}',
+        f'/api/users/{user.id}',
         json={
             'username': 'test2',
             'password': '369258147',
@@ -194,7 +195,7 @@ def test_update_user(client, user, token):
 
 def test_update_user_email_already_exists(client, user, other_user, token):
     response = client.put(
-        f'/users/{user.id}',
+        f'/api/users/{user.id}',
         json={
             'username': 'test3',
             'email': other_user.email,
@@ -207,7 +208,7 @@ def test_update_user_email_already_exists(client, user, other_user, token):
 
 def test_update_user_not_found(client, user, token):
     response = client.put(
-        '/users/99',
+        '/api/users/99',
         json={
             'username': 'test3',
             'email': 'test@test.com',
@@ -221,7 +222,7 @@ def test_update_user_not_found(client, user, token):
 
 def test_create_admin(client):
     response = client.post(
-        '/users',
+        '/api/users',
         headers={'admin-secret': 'admin'},
         json={
             'email': 'test@a.com',
@@ -235,14 +236,14 @@ def test_create_admin(client):
 
 def test_read_users_not_permission(client, token):
     response = client.get(
-        '/users', headers={'Authorization': f'bearer {token}'}
+        '/api/users', headers={'Authorization': f'bearer {token}'}
     )
     assert response.json() == {'detail': 'Admin permission required.'}
 
 
 def test_update_user_without_user(client, user):
     response = client.put(
-        f'/users/{user.id}',
+        f'/api/users/{user.id}',
         json={
             'username': 'test2',
             'password': '369258147',

@@ -12,7 +12,7 @@
     async function loadProducts() {
         let container = document.getElementById('products-container');    
              
-        const response = await fetch('/products/filters?offset=0&limit=8'); 
+        const response = await fetch('/api/products/filters?offset=0&limit=8'); 
         const data = await response.json(); 
 
         if (!data.products || data.products.length === 0) {
@@ -24,7 +24,7 @@
         let html = '';
 
         data.products.forEach(product => {
-            const image = product.image || '/static/product_image.png';
+            const image = product.image || '/static/images/product_image.png';
 
             html +=` 
             <div class='product-card'>             

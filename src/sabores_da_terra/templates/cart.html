@@ -14,7 +14,7 @@
     async function loadOrders() {
         let orderContainer = document.getElementById('orders-container');
         
-        const response = await fetch('/orders/my-orders');
+        const response = await fetch('/api/orders/my-orders');
         const order = await response.json();
 
         if (response.ok && order.items.length > 0) {
@@ -64,7 +64,7 @@
                 
                 });
 
-                const updateResponse = await fetch('/orders/my-orders', {
+                const updateResponse = await fetch('/api/orders/my-orders', {
                     method: 'PUT',
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({items: updatedItems})
@@ -88,7 +88,7 @@
             });
             
             document.getElementById("buy-btn").addEventListener("click", async () => {
-                const checkoutResponse = await fetch(`/payment/checkout/${order.id}`, {method: 'POST'});
+                const checkoutResponse = await fetch(`/api/payment/checkout/${order.id}`, {method: 'POST'});
 
                 if (checkoutResponse.status === 401) {
                     infoContainer.innerHTML = '<p class="error-message">Sua sessão expirou! Rediredionando para pagina de login ...</p>' 
@@ -117,7 +117,7 @@
 
     window.addEventListener('DOMContentLoaded', loadOrders);
     document.getElementById("del-order-btn").addEventListener("click", async () => {
-        const response = await fetch('/orders/my-orders', {
+        const response = await fetch('/api/orders/my-orders', {
             method: "DELETE"
         });
 

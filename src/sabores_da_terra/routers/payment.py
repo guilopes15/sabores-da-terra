@@ -13,7 +13,7 @@ from src.sabores_da_terra.schemas import CheckoutPublic, Message
 from src.sabores_da_terra.security import get_current_user
 from src.sabores_da_terra.settings import Settings
 
-router = APIRouter(prefix='/payment', tags=['payment'])
+router = APIRouter(prefix='/api/payment', tags=['payment'])
 
 
 stripe.api_key = Settings().STRIPE_API_KEY

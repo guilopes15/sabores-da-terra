@@ -12,7 +12,7 @@ def test_create_order(client, token, product, mock_db_time):
         item_quantity = 3
 
         response = client.post(
-            '/orders',
+            '/api/orders',
             json={
                 'items': [
                     {'product_id': product.id, 'quantity': item_quantity}
@@ -47,7 +47,7 @@ def test_create_paid_order(client, token, product, mock_db_time):
         item_quantity = 3
 
         response = client.post(
-            '/orders',
+            '/api/orders',
             json={
                 'status': 'paid',
                 'items': [
@@ -82,7 +82,7 @@ def test_create_order_without_product(client, token):
     item_quantity = 5
 
     response = client.post(
-        '/orders',
+        '/api/orders',
         json={'items': [{'product_id': 99, 'quantity': item_quantity}]},
         headers={'Authorization': f'bearer {token}'},
     )
@@ -94,7 +94,7 @@ def test_create_order_inactive_product(client, token, inactive_product):
     item_quantity = 5
 
     response = client.post(
-        '/orders',
+        '/api/orders',
         json={
             'items': [
                 {'product_id': inactive_product.id, 'quantity': item_quantity}
@@ -110,7 +110,7 @@ def test_create_order_inactive_product(client, token, inactive_product):
 
 def test_create_order_insufficient_stock(client, token, product):
     response = client.post(
-        '/orders',
+        '/api/orders',
         json={'items': [{'product_id': product.id, 'quantity': 20}]},
         headers={'Authorization': f'bearer {token}'},
     )
@@ -124,7 +124,7 @@ def test_create_order_total_amount(client, token, product):
     expected_amount = product.price * item_quantity
 
     response = client.post(
-        '/orders',
+        '/api/orders',
         json={
             'items': [{'product_id': product.id, 'quantity': item_quantity}]
         },
@@ -143,7 +143,7 @@ def test_create_order_should_return_2_items(
     ]
     expected_items = 2
     response = client.post(
-        '/orders',
+        '/api/orders',
         json={'items': data},
         headers={'Authorization': f'bearer {token}'},
     )
@@ -155,7 +155,7 @@ def test_create_order_already_exists(client, token, product, order):
     time = datetime(2025, 9, 17)
 
     response = client.post(
-        '/orders',
+        '/api/orders',
         json={
             'items': [{'product_id': product.id, 'quantity': item_quantity}]
         },
@@ -184,7 +184,7 @@ def test_create_order_already_exists(client, token, product, order):
 
 
 def test_read_order_by_id(client, order, product):
-    response = client.get(f'/orders/{order.id}')
+    response = client.get(f'/api/orders/{order.id}')
     time = datetime(2025, 9, 17)
     assert response.json() == {
         'id': 1,
@@ -208,13 +208,13 @@ def test_read_order_by_id(client, order, product):
 
 
 def test_read_order_by_id_not_found(client):
-    response = client.get('/orders/99')
+    response = client.get('/api/orders/99')
     assert response.json() == {'detail': 'Order does not exists.'}
 
 
 def test_read_user_order(client, token, order, product):
     response = client.get(
-        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+        '/api/orders/my-orders', headers={'Authorization': f'bearer {token}'}
     )
     time = datetime(2025, 9, 17)
     assert response.json() == {
@@ -240,7 +240,7 @@ def test_read_user_order(client, token, order, product):
 
 def test_read_user_order_not_pending(client, token, other_order):
     response = client.get(
-        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+        '/api/orders/my-orders', headers={'Authorization': f'bearer {token}'}
     )
 
     assert response.json() == {
@@ -250,7 +250,7 @@ def test_read_user_order_not_pending(client, token, other_order):
 
 def test_read_user_order_not_found(client, token):
     response = client.get(
-        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+        '/api/orders/my-orders', headers={'Authorization': f'bearer {token}'}
     )
     assert response.json() == {
         'detail': 'Order does not exists or not pending.'
@@ -259,7 +259,7 @@ def test_read_user_order_not_found(client, token):
 
 def test_delete_order(client, token, order):
     response = client.delete(
-        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+        '/api/orders/my-orders', headers={'Authorization': f'bearer {token}'}
     )
 
     assert response.json() == {'message': 'Order deleted.'}
@@ -267,7 +267,7 @@ def test_delete_order(client, token, order):
 
 def test_delete_order_not_found(client, token):
     response = client.delete(
-        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+        '/api/orders/my-orders', headers={'Authorization': f'bearer {token}'}
     )
 
     assert response.json() == {
@@ -277,7 +277,7 @@ def test_delete_order_not_found(client, token):
 
 def test_delete_order_not_pending(client, token, other_order):
     response = client.delete(
-        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+        '/api/orders/my-orders', headers={'Authorization': f'bearer {token}'}
     )
 
     assert response.json() == {
@@ -289,7 +289,7 @@ def test_update_orders(client, order, token, product):
     item_quantity = 3
 
     response = client.put(
-        '/orders/my-orders',
+        '/api/orders/my-orders',
         json={
             'items': [{'product_id': product.id, 'quantity': item_quantity}]
         },
@@ -309,7 +309,7 @@ def test_update_order_not_found(client, token):
     item_quantity = 5
 
     response = client.put(
-        '/orders/my-orders',
+        '/api/orders/my-orders',
         json={'items': [{'product_id': 1, 'quantity': item_quantity}]},
         headers={'Authorization': f'bearer {token}'},
     )
@@ -323,7 +323,7 @@ def test_update_order_not_pending(client, token, other_order):
     item_quantity = 4
 
     response = client.put(
-        '/orders/my-orders',
+        '/api/orders/my-orders',
         json={'items': [{'product_id': 1, 'quantity': item_quantity}]},
         headers={'Authorization': f'bearer {token}'},
     )
@@ -337,7 +337,7 @@ def test_updated_order_product_not_found(client, token, order):
     item_quantity = 4
 
     response = client.put(
-        '/orders/my-orders',
+        '/api/orders/my-orders',
         json={'items': [{'product_id': 85, 'quantity': item_quantity}]},
         headers={'Authorization': f'bearer {token}'},
     )
@@ -351,7 +351,7 @@ def test_updated_order_inactive_product(
     item_quantity = 4
 
     response = client.put(
-        '/orders/my-orders',
+        '/api/orders/my-orders',
         json={
             'items': [
                 {'product_id': inactive_product.id, 'quantity': item_quantity}
@@ -369,7 +369,7 @@ def test_update_order_insufficient_stock(client, token, order):
     item_quantity = 50
 
     response = client.put(
-        '/orders/my-orders',
+        '/api/orders/my-orders',
         json={'items': [{'product_id': 1, 'quantity': item_quantity}]},
         headers={'Authorization': f'bearer {token}'},
     )
@@ -381,7 +381,7 @@ def test_update_order_remove_item_quantity_0(client, token, order):
     item_quantity = 0
 
     response = client.put(
-        '/orders/my-orders',
+        '/api/orders/my-orders',
         json={'items': [{'product_id': 1, 'quantity': item_quantity}]},
         headers={'Authorization': f'bearer {token}'},
     )
@@ -395,7 +395,7 @@ def test_update_order_add_new_item(
     item_quantity = 9
     expected_items = 2
     response = client.put(
-        '/orders/my-orders',
+        '/api/orders/my-orders',
         json={
             'items': [
                 {'product_id': other_product.id, 'quantity': item_quantity}
@@ -424,7 +424,7 @@ async def test_update_order_amount_after_remove_product(
     expected_amount = other_product.price * item_quantity
 
     response = client.post(
-        '/orders',
+        '/api/orders',
         json={
             'items': [
                 {'product_id': product.id, 'quantity': item_quantity},
@@ -435,7 +435,7 @@ async def test_update_order_amount_after_remove_product(
     )
 
     client.delete(
-        f'/products/{product.id}',
+        f'/api/products/{product.id}',
         headers={'Authorization': f'bearer {admin_token}'},
     )
 
@@ -451,7 +451,7 @@ async def test_order_zero_amount_after_remove_product(
     client, order, product, session, admin_token
 ):
     client.delete(
-        f'/products/{product.id}',
+        f'/api/products/{product.id}',
         headers={'Authorization': f'bearer {admin_token}'},
     )
 
@@ -463,7 +463,7 @@ async def test_order_zero_amount_after_remove_product(
 
 def test_create_order_with_not_user(client, product):
     response = client.post(
-            '/orders',
+            '/api/orders',
             json={
                 'items': [
                     {'product_id': product.id, 'quantity': 3}
@@ -478,7 +478,7 @@ def test_create_order_with_not_user(client, product):
 
 def test_read_user_order_with_not_user(client, order, product):
     response = client.get(
-        '/orders/my-orders', headers={}
+        '/api/orders/my-orders', headers={}
     )
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED
@@ -487,7 +487,7 @@ def test_read_user_order_with_not_user(client, order, product):
 
 def test_update_orders_with_not_user(client, product):
     response = client.put(
-        '/orders/my-orders',
+        '/api/orders/my-orders',
         json={
             'items': [{'product_id': product.id, 'quantity': 5}]
         },
@@ -500,7 +500,7 @@ def test_update_orders_with_not_user(client, product):
 
 def test_delete_order_with_not_user(client, order):
     response = client.delete(
-        '/orders/my-orders', headers={}
+        '/api/orders/my-orders', headers={}
     )
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED
@@ -514,14 +514,14 @@ def test_update_order_amount_with_change_product_price(
     new_product_price = 95.15
 
     client.patch(
-        f'/products/{product.id}',
+        f'/api/products/{product.id}',
         headers={'Authorization': f'bearer {admin_token}'},
         json={'stock_quantity': 25, 'price': new_product_price},
     )
     session.expire_all()
 
     order_response = client.get(
-        '/orders/my-orders', headers={'Authorization': f'bearer {token}'}
+        '/api/orders/my-orders', headers={'Authorization': f'bearer {token}'}
     )
 
     assert order_response.json()['total_amount'] == str(new_product_price)

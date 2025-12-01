@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 def test_checkout(client, token, order):
     response = client.post(
-        f'/payment/checkout/{order.id}',
+        f'/api/payment/checkout/{order.id}',
         headers={'Authorization': f'bearer {token}'},
     )
     assert 'checkout_url' in response.json().keys()
@@ -12,7 +12,7 @@ def test_checkout(client, token, order):
 
 def test_checkout_without_user(client, order):
     response = client.post(
-        f'/payment/checkout/{order.id}',
+        f'/api/payment/checkout/{order.id}',
         headers={},
     )
 
@@ -22,7 +22,8 @@ def test_checkout_without_user(client, order):
 
 def test_checkout_order_not_found(client, token):
     response = client.post(
-        '/payment/checkout/33', headers={'Authorization': f'bearer {token}'}
+        '/api/payment/checkout/33',
+        headers={'Authorization': f'bearer {token}'}
     )
 
     assert response.json() == {'detail': 'Invalid Order.'}
@@ -30,7 +31,7 @@ def test_checkout_order_not_found(client, token):
 
 def test_checkout_order_not_pending(client, token, other_order):
     response = client.post(
-        f'/payment/checkout/{other_order.id}',
+        f'/api/payment/checkout/{other_order.id}',
         headers={'Authorization': f'bearer {token}'},
     )
 
@@ -39,7 +40,7 @@ def test_checkout_order_not_pending(client, token, other_order):
 
 def test_checkout_order_wrong_user(client, token, order, other_user):
     response = client.post(
-        '/auth/token',
+        '/api/auth/token',
         data={
             'username': other_user.email,
             'password': other_user.clean_password,
@@ -49,7 +50,7 @@ def test_checkout_order_wrong_user(client, token, order, other_user):
     token = response.json()['access_token']
 
     response = client.post(
-        f'/payment/checkout/{order.id}',
+        f'/api/payment/checkout/{order.id}',
         headers={'Authorization': f'bearer {token}'},
     )
 
@@ -58,7 +59,7 @@ def test_checkout_order_wrong_user(client, token, order, other_user):
 
 def test_checkout_order_zero_amount(client, token):
     response = client.post(
-        '/orders',
+        '/api/orders',
         json={'items': []},
         headers={'Authorization': f'bearer {token}'},
     )
@@ -66,7 +67,7 @@ def test_checkout_order_zero_amount(client, token):
     order_id = response.json()['id']
 
     response = client.post(
-        f'/payment/checkout/{order_id}',
+        f'/api/payment/checkout/{order_id}',
         headers={'Authorization': f'bearer {token}'},
     )
 
@@ -76,7 +77,7 @@ def test_checkout_order_zero_amount(client, token):
 def test_webhook(client, mock_stripe_signature_verification, webhook_payload):
     with mock_stripe_signature_verification(order_id=1):
         response = client.post(
-            '/payment/webhook',
+            '/api/payment/webhook',
             headers={'stripe-signature': 'fake'},
             json=webhook_payload,
         )
@@ -86,7 +87,7 @@ def test_webhook(client, mock_stripe_signature_verification, webhook_payload):
 
 def test_webhook_invalid_signature(client, webhook_payload):
     response = client.post(
-        '/payment/webhook',
+        '/api/payment/webhook',
         headers={'stripe-signature': 'invalid'},
         json=webhook_payload,
     )
@@ -98,7 +99,7 @@ def test_webhook_order_not_found(
 ):
     with mock_stripe_signature_verification(order_id=None):
         response = client.post(
-            '/payment/webhook',
+            '/api/payment/webhook',
             headers={'stripe-signature': 'fake'},
             json=webhook_payload,
         )
@@ -111,7 +112,7 @@ def test_webhook_order_not_paid(
 ):
     with mock_stripe_signature_verification(order_id=1, status='pending'):
         response = client.post(
-            '/payment/webhook',
+            '/api/payment/webhook',
             headers={'stripe-signature': 'fake'},
             json=webhook_payload,
         )
@@ -124,7 +125,7 @@ def test_webhook_checkout_not_completed(
 ):
     with mock_stripe_signature_verification(checkout_type='uncompleted'):
         response = client.post(
-            '/payment/webhook',
+            '/api/payment/webhook',
             headers={'stripe-signature': 'fake'},
             json=webhook_payload,
         )

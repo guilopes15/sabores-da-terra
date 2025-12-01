@@ -28,7 +28,7 @@ async def send_email(
 
     msg['From'] = sender
     msg['To'] = recipient
-    msg['Subject'] = 'Venda concluída'
+    msg['Subject'] = 'Checkout Completado'
     msg.set_content(email_body)
 
     server_smtp = 'smtp.gmail.com'

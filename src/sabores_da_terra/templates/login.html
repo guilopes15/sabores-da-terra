@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/static/css/login.css">
     <title>Login</title>
 
@@ -29,7 +29,7 @@
             formData.append('username', form.email.value);
             formData.append('password', form.password.value);
             
-            const response = await fetch("/auth/token", {
+            const response = await fetch("/api/auth/token", {
                 method: 'POST',
                 credentials: "include",
                 body: formData
@@ -37,7 +37,7 @@
 
             if (response.ok) {
                 setTimeout(() => {
-                        window.location.href = '/home';
+                        window.location.href = '/';
                 }, 500);
                 
             } else if (response.status === 422 || response.status === 400) {

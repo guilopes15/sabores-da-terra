@@ -28,8 +28,3 @@ app.mount(
     StaticFiles(directory=BASE_DIR / "templates/static"),
     name="static"
 )
-
-
-@app.get('/')
-def root():
-    return {'message': 'Olá'}

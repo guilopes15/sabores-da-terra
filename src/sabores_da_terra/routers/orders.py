@@ -9,7 +9,7 @@ from src.sabores_da_terra.models import User
 from src.sabores_da_terra.schemas import Message, OrderPublic, OrderSchema
 from src.sabores_da_terra.security import get_current_user
 
-router = APIRouter(prefix='/orders', tags=['orders'])
+router = APIRouter(prefix='/api/orders', tags=['orders'])
 
 T_Session = Annotated[AsyncSession, Depends(get_session)]
 T_CurrentUser = Annotated[User, Depends(get_current_user)]

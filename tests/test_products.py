@@ -7,7 +7,7 @@ from src.sabores_da_terra.models import Order, Product
 def test_create_product(client, mock_db_time, admin_token):
     with mock_db_time(model=Product) as time:
         response = client.post(
-            '/products',
+            '/api/products',
             headers={'Authorization': f'bearer {admin_token}'},
             json={
                 'name': 'manga',
@@ -33,7 +33,7 @@ def test_create_product(client, mock_db_time, admin_token):
 
 def test_create_product_already_exits(client, product, admin_token):
     response = client.post(
-        '/products',
+        '/api/products',
         headers={'Authorization': f'bearer {admin_token}'},
         json={'name': product.name, 'price': 35.10, 'stock_quantity': 6},
     )
@@ -41,12 +41,12 @@ def test_create_product_already_exits(client, product, admin_token):
 
 
 def test_read_products(client):
-    response = client.get('/products')
+    response = client.get('/api/products')
     assert response.json() == {'products': []}
 
 
 def test_read_products_with_product(client, product):
-    response = client.get('/products')
+    response = client.get('/api/products')
 
     assert response.json() == {
         'products': [
@@ -66,7 +66,7 @@ def test_read_products_with_product(client, product):
 
 
 def test_read_products_by_id(client, product):
-    response = client.get(f'/products/{product.id}')
+    response = client.get(f'/api/products/{product.id}')
 
     assert response.json() == {
         'id': product.id,
@@ -82,13 +82,13 @@ def test_read_products_by_id(client, product):
 
 
 def test_read_products_by_id_wrong_product(client):
-    response = client.get('/products/888')
+    response = client.get('/api/products/888')
     assert response.json() == {'detail': 'Product does not exists.'}
 
 
 def test_delete_product(client, product, admin_token):
     response = client.delete(
-        f'/products/{product.id}',
+        f'/api/products/{product.id}',
         headers={'Authorization': f'bearer {admin_token}'},
     )
     assert response.json() == {'message': 'Product deleted'}
@@ -96,7 +96,7 @@ def test_delete_product(client, product, admin_token):
 
 def test_delete_product_not_found(client, admin_token):
     response = client.delete(
-        '/products/99999',
+        '/api/products/99999',
         headers={'Authorization': f'bearer {admin_token}'},
     )
     assert response.json() == {'detail': 'Product does not exists.'}
@@ -107,7 +107,7 @@ async def test_remove_product_from_pending_orders(
     client, order, product, session, admin_token
 ):
     client.delete(
-        f'/products/{product.id}',
+        f'/api/products/{product.id}',
         headers={'Authorization': f'bearer {admin_token}'},
     )
 
@@ -121,7 +121,7 @@ async def test_keep_product_from_paid_order(
     client, other_order, product, session, admin_token
 ):
     client.delete(
-        f'/products/{product.id}',
+        f'/api/products/{product.id}',
         headers={'Authorization': f'bearer {admin_token}'},
     )
     expected_length = 1
@@ -133,7 +133,7 @@ async def test_keep_product_from_paid_order(
 
 def test_patch_product(client, product, admin_token):
     response = client.patch(
-        f'/products/{product.id}',
+        f'/api/products/{product.id}',
         headers={'Authorization': f'bearer {admin_token}'},
         json={'stock_quantity': 25, 'price': 95.15},
     )
@@ -153,7 +153,7 @@ def test_patch_product(client, product, admin_token):
 
 def test_patch_product_not_found(client, admin_token):
     response = client.patch(
-        '/products/777777',
+        '/api/products/777777',
         headers={'Authorization': f'bearer {admin_token}'},
         json={'stock_quantity': 25, 'price': 95.15},
     )
@@ -164,7 +164,7 @@ def test_patch_product_name_already_exists(
     client, product, other_product, admin_token
 ):
     response = client.patch(
-        f'/products/{product.id}',
+        f'/api/products/{product.id}',
         headers={'Authorization': f'bearer {admin_token}'},
         json={'name': other_product.name},
     )
@@ -172,7 +172,7 @@ def test_patch_product_name_already_exists(
 
 
 def test_read_products_offset(client, product, other_product):
-    response = client.get('/products/filters?offset=1')
+    response = client.get('/api/products/filters?offset=1')
 
     expected_length = 1
 
@@ -180,7 +180,7 @@ def test_read_products_offset(client, product, other_product):
 
 
 def test_read_products_limit(client, product, other_product):
-    response = client.get('/products/filters?limit=1')
+    response = client.get('/api/products/filters?limit=1')
 
     expected_length = 1
 
@@ -188,6 +188,6 @@ def test_read_products_limit(client, product, other_product):
 
 
 def test_read_products_by_name(client, product):
-    response = client.get('/products/filters?name=uva')
+    response = client.get('/api/products/filters?name=uva')
 
     assert response.json()['products'][0]['name'] == product.name

@@ -48,7 +48,7 @@
     var container = document.getElementById("info-message");
 
     async function loadProduct() {    
-        const response = await fetch(`/products/${productId}`);
+        const response = await fetch(`/api/products/${productId}`);
         
         if (!response.ok) {
             const container = document.getElementById("product-container");
@@ -60,7 +60,7 @@
         
         const img = document.createElement('img');
         img.classList.add('product-image');
-        img.src = product.image || '/static/product_image.png'; // se null, usa imagem padrão
+        img.src = product.image || '/static/images/product_image.png'; // se null, usa imagem padrão
         img.alt = 'Imagem do produto';
 
         const nameElement = document.getElementById("name");
@@ -86,7 +86,7 @@
     }
     
     async function updateOrder(payload) {
-        const updateResponse = await fetch('/orders/my-orders', {
+        const updateResponse = await fetch('/api/orders/my-orders', {
             method: 'PUT',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload)
@@ -97,7 +97,7 @@
             return;
         
         } else if (updateResponse.status === 400) {
-            showMessage("Estoque insuficiente! Verifique a quantidade.", "error");
+            showMessage("Estoque insuficiente!", "error");
             return;
         
         } else if (updateResponse.status === 422){
@@ -111,7 +111,7 @@
     }   
     
     async function createOrder(payload) {
-        const createResponse = await fetch("/orders/", {
+        const createResponse = await fetch("/api/orders/", {
             method: 'POST',
             headers: {"Content-Type": "application/json"},
             credentials: "include",
@@ -124,7 +124,7 @@
             return;
 
         } else if (createResponse.status === 400) {             
-            showMessage("Stock insuficiente! Verifique a quantitdade.", "error")               
+            showMessage("Stock insuficiente!", "error")               
             return;
             
         } else if (createResponse.status === 422){
@@ -138,7 +138,7 @@
     }
     
     async function addOrderItem() {
-        const response = await fetch("/orders/my-orders");
+        const response = await fetch("/api/orders/my-orders");
         const itemQuantity = parseInt(document.getElementById("quantity").value, 10);
         const payload = {
             items: [
