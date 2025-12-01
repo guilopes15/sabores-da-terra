@@ -83,7 +83,7 @@ async def web_site(client, message):
 
 @bot.on_message(filters.command('social'))
 async def social_media(client, message):
-    msg = 'WhatsApp: (99)99999-9999 \n Instagram: insta.com'
+    msg = 'WhatsApp: (99)99999-9999 \n Instagram: (link e @)'
     await message.reply(msg.strip())
 
 

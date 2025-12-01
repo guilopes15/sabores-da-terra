@@ -140,7 +140,7 @@ async def inactive_product(session, mock_db_time):
 @pytest.fixture
 def token(client, user):
     response = client.post(
-        '/auth/token',
+        '/api/auth/token',
         data={
             'username': user.email,
             'password': user.clean_password,
@@ -152,7 +152,7 @@ def token(client, user):
 @pytest.fixture
 def admin_token(client, admin):
     response = client.post(
-        '/auth/token',
+        '/api/auth/token',
         data={
             'username': admin.email,
             'password': admin.clean_password,

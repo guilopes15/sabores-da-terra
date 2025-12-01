@@ -8,7 +8,7 @@ router = APIRouter()
 template = Jinja2Templates(directory='src/sabores_da_terra/templates')
 
 
-@router.get('/home', response_class=HTMLResponse)
+@router.get('/', response_class=HTMLResponse)
 async def home(
     request: Request,
     user=Depends(get_current_user),

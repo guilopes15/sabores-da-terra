@@ -16,7 +16,7 @@ from src.sabores_da_terra.security import (
 )
 from src.sabores_da_terra.settings import Settings
 
-router = APIRouter(prefix='/auth', tags=['auth'])
+router = APIRouter(prefix='/api/auth', tags=['auth'])
 
 T_Session = Annotated[AsyncSession, Depends(get_session)]
 T_OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]

@@ -58,7 +58,7 @@
             image: form.image.value
         };
 
-        const response = await fetch("/products/", {
+        const response = await fetch("/api/products/", {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
@@ -108,7 +108,7 @@
         if (form.price.value) data.price = form.price.value;
         if (form.image.value) data.image = form.image.value;
         
-        const response = await fetch(`/products/${form.id.value}`, {
+        const response = await fetch(`/api/products/${form.id.value}`, {
             method: 'PATCH',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
@@ -146,7 +146,7 @@
 
         document.getElementById('delete-btn').addEventListener("click", async () => {
             const id = parseInt(document.getElementById("product_id").value);
-            const response = await fetch(`/products/${id}`, {
+            const response = await fetch(`/api/products/${id}`, {
                 method: 'DELETE'
             });
 
@@ -164,7 +164,7 @@
         });
     }
 
-    async function searchProducts() {
+    async function getProducts() {
         container.innerHTML = `
             <div id="search-options">
                 <button id="search-by-name">Por Nome</button>
@@ -180,7 +180,7 @@
             
             document.getElementById("search-single-product-btn").addEventListener("click", async () => {
                 const name = document.getElementById("product_name");
-                const response = await fetch(`/products/filters?name=${name.value}`)
+                const response = await fetch(`/api/products/filters?name=${name.value}`)
                 const data = await response.json();
                 
                 if (data.products.length > 0) {
@@ -202,7 +202,7 @@
         });
         
         document.getElementById("search-all-products").addEventListener("click", async () => {
-            const response = await fetch('/products/'); 
+            const response = await fetch('/api/products/'); 
 
             const data = await response.json();
 
@@ -259,7 +259,7 @@
         });
         
         infoContainer.innerHTML = '<p class="success-message">Produto adicionado ao pedido.</p>'; 
-        setTimeout(() => infoContainer.innerHTML = '', 3000);
+        setTimeout(() => infoContainer.innerHTML = '', 2000);
         productId.value = ''
         productQuantity.value = ''
         
@@ -269,7 +269,7 @@
         let response;
         
         if (order.get("items").length > 0) {  
-            response = await fetch('/orders/', {
+            response = await fetch('/api/orders/', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(Object.fromEntries(order))
@@ -281,7 +281,7 @@
         }
        
         if (response.ok) {
-            const myOrder = await fetch('/orders/my-orders');
+            const myOrder = await fetch('/api/orders/my-orders');
 
             if (myOrder.ok) {
                 order.set("items", []);
@@ -290,6 +290,7 @@
             } else {      
                 order.set("items", []);
                 infoContainer.innerHTML = '<p class="success-message">Pedido criado com sucesso!</p>'               
+                setTimeout(() => infoContainer.innerHTML = '', 2000);
                 return;           
             }
                       
@@ -319,7 +320,7 @@
 
             const orderId = document.getElementById('order-id').value;
 
-            const response = await fetch(`/orders/${orderId}`, {
+            const response = await fetch(`/api/orders/${orderId}`, {
                 method: "GET",
                 headers: {"Content-Type": "application/json"}
             });
@@ -368,7 +369,7 @@
         
         document.getElementById("search-user-btn").addEventListener("click", async () => {
             const userId = document.getElementById("user-id").value;
-            const response = await fetch(`/users/${userId}`, {
+            const response = await fetch(`/api/users/${userId}`, {
                 method: "GET",
                 headers: {"Content-Type": "application/json"}
             })
@@ -396,7 +397,7 @@
     document.getElementById("create-product-btn").addEventListener("click", createProductForm);
     document.getElementById("update-product-btn").addEventListener("click", updateProductForm);
     document.getElementById("delete-product-btn").addEventListener("click", deleteProduct);
-    document.getElementById("search-products-btn").addEventListener("click", searchProducts);
+    document.getElementById("search-products-btn").addEventListener("click", getProducts);
 </script>
 
 {% endblock %}

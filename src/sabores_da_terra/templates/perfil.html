@@ -34,7 +34,7 @@
     
     async function getUser() {
         
-        const response = await fetch(`/users/${userId}`);
+        const response = await fetch(`/api/users/${userId}`);
         if (!response.ok) {
             
             perfilContainer.innerHTML = `<p class="error-message">Usuario não existe! Você será redirecionado...`
@@ -98,7 +98,7 @@
         `;
 
         document.getElementById("del-btn").onclick = async function () {
-            const response = await fetch(`/users/${userId}`, {
+            const response = await fetch(`/api/users/${userId}`, {
                 method: 'DELETE'
             });
             
@@ -106,7 +106,7 @@
             
             if (response.ok) {               
                 setTimeout(() => panelContainer.innerHTML = '<p class="sucess-message">Conta deletada com sucesso. Redirecionando ... </p>', 3000);
-                window.location.href = '/home'
+                window.location.href = '/'
             
             } else if (response.status === 403){
                 errorBox.innerHTML = '<p class="error-message">Não foi possível deletar conta! Sem permissão.</p>'
@@ -144,7 +144,7 @@
                 password: password.value
             }
             
-            const response = await fetch(`/users/${userId}`, {
+            const response = await fetch(`/api/users/${userId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)

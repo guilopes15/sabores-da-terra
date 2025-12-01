@@ -4,7 +4,7 @@
 {% block auth %}
 <script>
     window.addEventListener('DOMContentLoaded', async () => {
-        const response = await fetch("/auth/refresh_token", {
+        const response = await fetch("/api/auth/refresh_token", {
             method: 'POST',
 
         });

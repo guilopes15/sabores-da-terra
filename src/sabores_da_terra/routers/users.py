@@ -15,7 +15,7 @@ from src.sabores_da_terra.schemas import (
 )
 from src.sabores_da_terra.security import get_admin, get_current_user
 
-router = APIRouter(prefix='/users', tags=['users'])
+router = APIRouter(prefix='/api/users', tags=['users'])
 T_Session = Annotated[AsyncSession, Depends(get_session)]
 T_CurrentUser = Annotated[User, Depends(get_current_user)]
 T_Admin = Annotated[User, Depends(get_admin)]
