@@ -51,7 +51,7 @@ async def read_products(client, message):
 
         async with httpx.AsyncClient() as cl:
             response = await cl.get(
-                'http://localhost:8000/products/filters',
+                'http://localhost:8000/api/products/filters',
                 params={"name": product_name}
             )
 
