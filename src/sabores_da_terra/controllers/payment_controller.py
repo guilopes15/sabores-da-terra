@@ -110,7 +110,7 @@ class PaymentController:
                     await session.commit()
                     await session.refresh(db_order)
 
-                except (AttributeError, TypeError):
+                except (AttributeError, TypeError, ValueError):
                     await send_email(
                         sender=Settings().EMAIL_SENDER,
                         recipient=Settings().EMAIL_RECIPIENT,
@@ -133,7 +133,8 @@ class PaymentController:
                         'id': db_order.id,
                         'user_id': db_order.user_id,
                         'total': db_order.total_amount,
-                        'time': db_order.updated_at}
+                        'time': db_order.updated_at
+                    }
 
                     await send_email(
                         sender=Settings().EMAIL_SENDER,
