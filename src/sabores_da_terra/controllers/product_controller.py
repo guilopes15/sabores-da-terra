@@ -2,7 +2,9 @@ from http import HTTPStatus
 
 from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import (
+    IntegrityError,
+)
 
 from src.sabores_da_terra.models import Product
 
@@ -59,16 +61,17 @@ class ProductController:
 
     @staticmethod
     async def patch(product_id, product, session):
-        db_product = await session.scalar(
-            select(Product).where(Product.id == product_id)
-        )
-        if not db_product:
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND,
-                detail='Product does not exists.',
+        try:
+            db_product = await session.scalar(
+                select(Product).where(Product.id == product_id)
             )
 
-        try:
+            if not db_product:
+                raise HTTPException(
+                    status_code=HTTPStatus.NOT_FOUND,
+                    detail='Product does not exists.',
+                )
+
             for key, value in product.model_dump(exclude_unset=True).items():
                 setattr(db_product, key, value)
 
@@ -77,6 +80,7 @@ class ProductController:
             await session.refresh(db_product)
 
         except IntegrityError:
+            await session.rollback()
             raise HTTPException(
                 status_code=HTTPStatus.CONFLICT,
                 detail='Product name already exists.',
@@ -86,16 +90,25 @@ class ProductController:
 
     @staticmethod
     async def delete(product_id, session):
-        db_product = await session.scalar(
-            select(Product).where(Product.id == product_id)
-        )
-        if not db_product:
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND,
-                detail='Product does not exists.',
+        try:
+            db_product = await session.scalar(
+                select(Product).where(Product.id == product_id)
             )
 
-        db_product.is_active = False
-        await session.commit()
+            if not db_product:
+                raise HTTPException(
+                    status_code=HTTPStatus.NOT_FOUND,
+                    detail='Product does not exists.',
+                )
 
-        return {'message': 'Product deleted'}
+            db_product.is_active = False
+            await session.commit()
+
+            return {'message': 'Product deleted'}
+
+        except IntegrityError:
+            await session.rollback()
+            raise HTTPException(
+                status_code=HTTPStatus.CONFLICT,
+                detail='cannot remove product'
+            )
