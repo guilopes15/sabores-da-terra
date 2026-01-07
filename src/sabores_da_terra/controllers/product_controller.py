@@ -51,7 +51,7 @@ class ProductController:
         query = select(Product).where(Product.is_active)
 
         if filter_page.name:
-            query = query.filter(Product.name.ilike(f"%{filter_page.name}%"))
+            query = query.filter(Product.name.ilike(f'%{filter_page.name}%'))
 
         active_products = await session.scalars(
             query.limit(filter_page.limit).offset(filter_page.offset)
@@ -109,6 +109,5 @@ class ProductController:
         except IntegrityError:
             await session.rollback()
             raise HTTPException(
-                status_code=HTTPStatus.CONFLICT,
-                detail='cannot remove product'
+                status_code=HTTPStatus.CONFLICT, detail='cannot remove product'
             )

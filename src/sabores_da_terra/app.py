@@ -24,7 +24,7 @@ app.include_router(web_page.router)
 BASE_DIR = Path(__file__).resolve().parent
 
 app.mount(
-    "/static",
-    StaticFiles(directory=BASE_DIR / "templates/static"),
-    name="static"
+    '/static',
+    StaticFiles(directory=BASE_DIR / 'templates/static'),
+    name='static',
 )

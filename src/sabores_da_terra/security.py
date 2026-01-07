@@ -15,7 +15,9 @@ from src.sabores_da_terra.models import User
 from src.sabores_da_terra.settings import Settings
 
 pwd_context = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/token', auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl='/api/auth/token', auto_error=False
+)
 
 
 def get_password_hash(password):
@@ -43,7 +45,7 @@ def create_access_token(data):
 async def get_current_user(
     session: AsyncSession = Depends(get_session),
     authorization: str | None = Depends(oauth2_scheme),
-    access_token: str | None = Cookie(None)
+    access_token: str | None = Cookie(None),
 ):
     credentials_exception = HTTPException(
         status_code=HTTPStatus.UNAUTHORIZED,
