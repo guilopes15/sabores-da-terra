@@ -1,27 +1,37 @@
-site_name: Minha Documentação
+site_name: Sabores da Terra
 nav:
-  - Início: index.md
-  - Fluxo de utilização: fluxo.md
-  - Relacionamento de Entidades: entidades.md
-
+    - Início: index.md
+    - Como começar?: get_started.md
+    - Fluxo de utilização: fluxo.md
+    - Autentificação e Autorização: auth.md
+    - Regras de Negócio: rules.md
+    - Rotas:
+          - Index: routers/index.md
+          - Users: routers/users.md
+          - Auth: routers/auth.md
+          - Products: routers/products.md
+          - Orders: routers/orders.md
+          - Payment: routers/payment.md
+    - Relacionamento de Entidades: entidades.md
+    - Infra: infra.md
 
 theme:
-  name: material
-  features:
-    - navigation.instant  # Carrega páginas sem recarregar o site
-    - navigation.tabs  # Adiciona abas no menu
-    - navigation.top  # Botão "voltar ao topo"
-    - search.highlight  # Destaca palavras na pesquisa
+    name: material
+    features:
+        - navigation.instant # Carrega páginas sem recarregar o site
+        - navigation.tabs # Adiciona abas no menu
+        - navigation.top # Botão "voltar ao topo"
+        - search.highlight # Destaca palavras na pesquisa
 
 markdown_extensions:
-  - toc:
-      permalink: true
-  - admonition
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          #format: !!python/name:pymdownx.superfences.fence_code_format (Quando encontrar uma cerca de código com nome mermaid, use a função fence_code_format para processar o conteúdo antes de renderizar)
-  - pymdownx.tabbed
-  - pymdownx.highlight
-  - pymdownx.details
+    - toc:
+          permalink: true
+    - admonition
+    - pymdownx.superfences:
+          custom_fences:
+              - name: mermaid
+                class: mermaid
+                #format: !!python/name:pymdownx.superfences.fence_code_format (Quando encontrar uma cerca de código com nome mermaid, use a função fence_code_format para processar o conteúdo antes de renderizar)
+    - pymdownx.tabbed
+    - pymdownx.highlight
+    - pymdownx.details
