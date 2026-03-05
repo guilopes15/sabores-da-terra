@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.sabores_da_terra.services.order_service import OrderService
 from src.sabores_da_terra.database import get_session
 from src.sabores_da_terra.models import User
 from src.sabores_da_terra.schemas import Message, OrderPublic, OrderSchema
 from src.sabores_da_terra.security import get_current_user
+from src.sabores_da_terra.services.order_service import OrderService
 
 router = APIRouter(prefix='/api/orders', tags=['orders'])
 

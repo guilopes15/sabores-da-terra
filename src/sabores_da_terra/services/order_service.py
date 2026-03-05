@@ -12,7 +12,8 @@ class OrderService:
         if not current_user:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
-                detail='Could not validate credentials')
+                detail='Could not validate credentials',
+            )
 
         db_order = await session.scalar(
             select(Order).where(Order.user_id == current_user.id)
@@ -22,9 +23,7 @@ class OrderService:
             return db_order
 
         db_order = Order(
-            user_id=current_user.id,
-            total_amount=0,
-            status=order_data.status
+            user_id=current_user.id, total_amount=0, status=order_data.status
         )
         session.add(db_order)
         await session.flush()
@@ -34,8 +33,7 @@ class OrderService:
         for item in order_data.items:
             product = await session.scalar(
                 select(Product).where(
-                    (Product.id == item.product_id) &
-                    (Product.is_active)
+                    (Product.id == item.product_id) & (Product.is_active)
                 )
             )
             if not product:
@@ -56,7 +54,7 @@ class OrderService:
                     quantity=item.quantity,
                     price=product.price,
                     product_name=product.name,
-                    product_image=product.image
+                    product_image=product.image,
                 )
 
                 items.append(items_to_add)
@@ -74,7 +72,8 @@ class OrderService:
         if not current_user:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
-                detail='Could not validate credentials')
+                detail='Could not validate credentials',
+            )
 
         db_order = await session.scalar(
             select(Order).where(
@@ -109,7 +108,8 @@ class OrderService:
         if not current_user:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
-                detail='Could not validate credentials')
+                detail='Could not validate credentials',
+            )
 
         db_order = await session.scalar(
             select(Order).where(
@@ -127,8 +127,7 @@ class OrderService:
         for item in order_data.items:
             product = await session.scalar(
                 select(Product).where(
-                    (Product.id == item.product_id) &
-                    (Product.is_active)
+                    (Product.id == item.product_id) & (Product.is_active)
                 )
             )
 
@@ -140,8 +139,10 @@ class OrderService:
 
             if product.stock_quantity < item.quantity:
                 raise HTTPException(
-                status_code=HTTPStatus.BAD_REQUEST,
-                detail=f'insufficient stock for product_id {item.product_id}',
+                    status_code=HTTPStatus.BAD_REQUEST,
+                    detail=(
+                    f'insufficient stock for product_id {item.product_id}'
+                    ),
                 )
 
             order_item = next(
@@ -153,9 +154,8 @@ class OrderService:
 
             if order_item:
                 if item.quantity == 0:
-
                     await session.delete(order_item)
-                    await session.refresh(db_order, attribute_names=["items"])
+                    await session.refresh(db_order, attribute_names=['items'])
 
                 else:
                     order_item.quantity = item.quantity
@@ -168,7 +168,7 @@ class OrderService:
                     quantity=item.quantity,
                     price=product.price,
                     product_name=product.name,
-                    product_image=product.image
+                    product_image=product.image,
                 )
 
                 db_order.items.append(items_to_add)
@@ -186,7 +186,8 @@ class OrderService:
         if not current_user:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
-                detail='Could not validate credentials')
+                detail='Could not validate credentials',
+            )
 
         db_order = await session.scalar(
             select(Order).where(

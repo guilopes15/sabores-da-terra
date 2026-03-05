@@ -7,19 +7,18 @@ import aiosmtplib
 async def send_email(
     *, sender, recipient, smtp_password, order_data={}, custom_message=None
 ):
-
     if custom_message:
         email_body = custom_message
 
     elif order_data:
         date_time = order_data['time'] - timedelta(hours=3)
 
-        email_body = f'''
+        email_body = f"""
         Venda número {order_data['id']} foi finalizada
         pelo cliente {order_data['user_id']}
         no valor de R${order_data['total']}
         ás {date_time.strftime('%H:%M:%S do dia %d/%m/%Y')}.
-        '''
+        """
 
     else:
         return
@@ -40,5 +39,5 @@ async def send_email(
         port=port,
         start_tls=True,
         username=sender,
-        password=smtp_password
+        password=smtp_password,
     )

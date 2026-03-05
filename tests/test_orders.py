@@ -36,7 +36,7 @@ def test_create_order(client, token, product, mock_db_time):
                 'quantity': 3,
                 'price': product.price.to_eng_string(),
                 'product_name': product.name,
-                'product_image': product.image
+                'product_image': product.image,
             }
         ],
     }
@@ -52,7 +52,7 @@ def test_create_paid_order(client, token, product, mock_db_time):
                 'status': 'paid',
                 'items': [
                     {'product_id': product.id, 'quantity': item_quantity}
-                ]
+                ],
             },
             headers={'Authorization': f'bearer {token}'},
         )
@@ -72,7 +72,7 @@ def test_create_paid_order(client, token, product, mock_db_time):
                 'quantity': 3,
                 'price': product.price.to_eng_string(),
                 'product_name': product.name,
-                'product_image': product.image
+                'product_image': product.image,
             }
         ],
     }
@@ -177,7 +177,7 @@ def test_create_order_already_exists(client, token, product, order):
                 'quantity': order.items[0].quantity,
                 'price': product.price.to_eng_string(),
                 'product_name': product.name,
-                'product_image': product.image
+                'product_image': product.image,
             }
         ],
     }
@@ -201,7 +201,7 @@ def test_read_order_by_id(client, order, product):
                 'quantity': order.items[0].quantity,
                 'price': order.items[0].price.to_eng_string(),
                 'product_name': product.name,
-                'product_image': product.image
+                'product_image': product.image,
             }
         ],
     }
@@ -232,7 +232,7 @@ def test_read_user_order(client, token, order, product):
                 'quantity': order.items[0].quantity,
                 'price': order.items[0].price.to_eng_string(),
                 'product_name': product.name,
-                'product_image': product.image
+                'product_image': product.image,
             }
         ],
     }
@@ -463,23 +463,17 @@ async def test_order_zero_amount_after_remove_product(
 
 def test_create_order_with_not_user(client, product):
     response = client.post(
-            '/api/orders',
-            json={
-                'items': [
-                    {'product_id': product.id, 'quantity': 3}
-                ]
-            },
-            headers={},
-        )
+        '/api/orders',
+        json={'items': [{'product_id': product.id, 'quantity': 3}]},
+        headers={},
+    )
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.json() == {'detail': 'Could not validate credentials'}
 
 
 def test_read_user_order_with_not_user(client, order, product):
-    response = client.get(
-        '/api/orders/my-orders', headers={}
-    )
+    response = client.get('/api/orders/my-orders', headers={})
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.json() == {'detail': 'Could not validate credentials'}
@@ -488,9 +482,7 @@ def test_read_user_order_with_not_user(client, order, product):
 def test_update_orders_with_not_user(client, product):
     response = client.put(
         '/api/orders/my-orders',
-        json={
-            'items': [{'product_id': product.id, 'quantity': 5}]
-        },
+        json={'items': [{'product_id': product.id, 'quantity': 5}]},
         headers={},
     )
 
@@ -499,18 +491,15 @@ def test_update_orders_with_not_user(client, product):
 
 
 def test_delete_order_with_not_user(client, order):
-    response = client.delete(
-        '/api/orders/my-orders', headers={}
-    )
+    response = client.delete('/api/orders/my-orders', headers={})
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.json() == {'detail': 'Could not validate credentials'}
 
 
 def test_update_order_amount_with_change_product_price(
-        client, order, token, product, admin_token, session
+    client, order, token, product, admin_token, session
 ):
-
     new_product_price = 95.15
 
     client.patch(

@@ -4,7 +4,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Header, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.sabores_da_terra.services.user_service import UserService
 from src.sabores_da_terra.database import get_session
 from src.sabores_da_terra.models import User
 from src.sabores_da_terra.schemas import (
@@ -14,6 +13,7 @@ from src.sabores_da_terra.schemas import (
     UserSchema,
 )
 from src.sabores_da_terra.security import get_admin, get_current_user
+from src.sabores_da_terra.services.user_service import UserService
 
 router = APIRouter(prefix='/api/users', tags=['users'])
 T_Session = Annotated[AsyncSession, Depends(get_session)]
@@ -57,6 +57,6 @@ async def delete_user(
     user_id: int,
     session: T_Session,
     current_user: T_CurrentUser,
-    response: Response
+    response: Response,
 ):
     return await UserService.delete(user_id, session, current_user, response)

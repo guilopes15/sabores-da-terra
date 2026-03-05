@@ -4,13 +4,13 @@ import stripe
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.sabores_da_terra.services.payment_service import (
-    PaymentService,
-)
 from src.sabores_da_terra.database import get_session
 from src.sabores_da_terra.models import User
 from src.sabores_da_terra.schemas import CheckoutPublic, Message
 from src.sabores_da_terra.security import get_current_user
+from src.sabores_da_terra.services.payment_service import (
+    PaymentService,
+)
 from src.sabores_da_terra.settings import Settings
 
 router = APIRouter(prefix='/api/payment', tags=['payment'])

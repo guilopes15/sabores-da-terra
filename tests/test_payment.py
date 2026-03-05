@@ -23,7 +23,7 @@ def test_checkout_without_user(client, order):
 def test_checkout_order_not_found(client, token):
     response = client.post(
         '/api/payment/checkout/33',
-        headers={'Authorization': f'bearer {token}'}
+        headers={'Authorization': f'bearer {token}'},
     )
 
     assert response.json() == {'detail': 'Invalid Order.'}

@@ -107,7 +107,7 @@ async def product(session, mock_db_time):
             name='uva',
             price=25.50,
             stock_quantity=8,
-            image='productimage@href.com'
+            image='productimage@href.com',
         )
 
         session.add(db_product)
@@ -193,7 +193,7 @@ async def order(session, mock_db_time, product, user):
             quantity=1,
             price=product.price,
             product_name=product.name,
-            product_image=product.image
+            product_image=product.image,
         )
         session.add(order_items)
         db_order.total_amount = product.price * order_items.quantity
@@ -213,7 +213,7 @@ async def other_order(session, mock_db_time, product, user):
             product_id=product.id,
             quantity=1,
             price=product.price,
-            product_name=product.name
+            product_name=product.name,
         )
         session.add(order_items)
         db_order.total_amount = product.price * order_items.quantity

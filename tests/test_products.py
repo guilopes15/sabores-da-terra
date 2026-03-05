@@ -14,7 +14,7 @@ def test_create_product(client, mock_db_time, admin_token):
                 'description': 'Uma descricao da manga',
                 'stock_quantity': 5,
                 'price': 30.15,
-                'image': 'productimage@href.com'
+                'image': 'productimage@href.com',
             },
         )
 
@@ -27,7 +27,7 @@ def test_create_product(client, mock_db_time, admin_token):
         'created_at': time.isoformat(),
         'updated_at': time.isoformat(),
         'is_active': True,
-        'image': 'productimage@href.com'
+        'image': 'productimage@href.com',
     }
 
 
@@ -59,7 +59,7 @@ def test_read_products_with_product(client, product):
                 'created_at': product.created_at.isoformat(),
                 'updated_at': product.updated_at.isoformat(),
                 'is_active': True,
-                'image': 'productimage@href.com'
+                'image': 'productimage@href.com',
             }
         ]
     }
@@ -77,7 +77,7 @@ def test_read_products_by_id(client, product):
         'created_at': product.created_at.isoformat(),
         'updated_at': product.updated_at.isoformat(),
         'is_active': True,
-        'image': product.image
+        'image': product.image,
     }
 
 
@@ -147,7 +147,7 @@ def test_patch_product(client, product, admin_token):
         'created_at': product.created_at.isoformat(),
         'updated_at': product.updated_at.isoformat(),
         'is_active': True,
-        'image': product.image
+        'image': product.image,
     }
 
 

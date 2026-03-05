@@ -114,7 +114,7 @@ def test_read_users_with_order(client, user, product, order, admin_token):
                                 'quantity': 1,
                                 'price': product.price.to_eng_string(),
                                 'product_name': product.name,
-                                'product_image': product.image
+                                'product_image': product.image,
                             }
                         ],
                     }
@@ -136,7 +136,7 @@ def test_read_users_with_order(client, user, product, order, admin_token):
 def test_read_user_by_id(client, user, admin_token):
     response = client.get(
         f'/api/users/{user.id}',
-        headers={'Authorization': f'bearer {admin_token}'}
+        headers={'Authorization': f'bearer {admin_token}'},
     )
 
     assert response.json() == {

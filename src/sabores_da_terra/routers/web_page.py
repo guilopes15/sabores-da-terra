@@ -12,10 +12,10 @@ template = Jinja2Templates(directory='src/sabores_da_terra/templates')
 async def home(
     request: Request,
     user=Depends(get_current_user),
-
 ):
     return template.TemplateResponse(
-        'index.html', {'request': request, 'user': user})
+        'index.html', {'request': request, 'user': user}
+    )
 
 
 @router.get('/register', response_class=HTMLResponse)

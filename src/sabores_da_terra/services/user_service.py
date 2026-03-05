@@ -67,7 +67,8 @@ class UserService:
         if not current_user:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
-                detail='Could not validate credentials')
+                detail='Could not validate credentials',
+            )
 
         if current_user.id != user_id:
             raise HTTPException(
@@ -99,7 +100,8 @@ class UserService:
         if not current_user:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
-                detail='Could not validate credentials')
+                detail='Could not validate credentials',
+            )
 
         if current_user.id != user_id:
             raise HTTPException(
@@ -110,6 +112,6 @@ class UserService:
         await session.delete(current_user)
         await session.commit()
 
-        response.delete_cookie("access_token")
+        response.delete_cookie('access_token')
 
         return {'message': 'User deleted'}

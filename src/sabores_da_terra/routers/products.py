@@ -3,9 +3,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.sabores_da_terra.services.product_service import (
-    ProductService,
-)
 from src.sabores_da_terra.database import get_session
 from src.sabores_da_terra.models import User
 from src.sabores_da_terra.schemas import (
@@ -17,6 +14,9 @@ from src.sabores_da_terra.schemas import (
     ProductUpdate,
 )
 from src.sabores_da_terra.security import get_admin
+from src.sabores_da_terra.services.product_service import (
+    ProductService,
+)
 
 router = APIRouter(prefix='/api/products', tags=['products'])
 T_Session = Annotated[AsyncSession, Depends(get_session)]
@@ -37,8 +37,7 @@ async def read_products(session: T_Session):
 
 @router.get('/filters', response_model=ProductList)
 async def filter_products(
-    session: T_Session,
-    filter_page: Annotated[FilterPage, Depends()]
+    session: T_Session, filter_page: Annotated[FilterPage, Depends()]
 ):
     return await ProductService.pagination(session, filter_page)
 
