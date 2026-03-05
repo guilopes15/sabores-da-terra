@@ -11,7 +11,7 @@ from src.sabores_da_terra.notification import send_email
 from src.sabores_da_terra.settings import Settings
 
 
-class PaymentController:
+class PaymentService:
     @staticmethod
     async def checkout(order_id, current_user, session):
         if not current_user:

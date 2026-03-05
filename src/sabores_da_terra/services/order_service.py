@@ -6,7 +6,7 @@ from sqlalchemy import select
 from src.sabores_da_terra.models import Order, OrderItem, Product
 
 
-class OrderController:
+class OrderService:
     @staticmethod
     async def create(order_data, current_user, session):
         if not current_user:

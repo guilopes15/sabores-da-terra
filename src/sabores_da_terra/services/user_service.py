@@ -9,7 +9,7 @@ from src.sabores_da_terra.models import Order, User
 from src.sabores_da_terra.security import Settings, get_password_hash
 
 
-class UserControler:
+class UserService:
     @staticmethod
     async def create(user, session, admin_secret):
         db_user = await session.scalar(

@@ -33,8 +33,3 @@ CMD ["sh", "-c", "\
     uvicorn src.sabores_da_terra.app:app --host 0.0.0.0 --workers 2 & \
     python src/sabores_da_terra_bot/main.py \
 "]
-
-
-
-
-

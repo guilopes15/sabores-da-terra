@@ -9,7 +9,7 @@ from sqlalchemy.exc import (
 from src.sabores_da_terra.models import Product
 
 
-class ProductController:
+class ProductService:
     @staticmethod
     async def create(product, session):
         db_product = await session.scalar(

@@ -4,8 +4,8 @@ import stripe
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.sabores_da_terra.controllers.payment_controller import (
-    PaymentController,
+from src.sabores_da_terra.services.payment_service import (
+    PaymentService,
 )
 from src.sabores_da_terra.database import get_session
 from src.sabores_da_terra.models import User
@@ -26,9 +26,9 @@ T_CurrentUser = Annotated[User, Depends(get_current_user)]
 async def checkout(
     order_id: int, current_user: T_CurrentUser, session: T_Session
 ):
-    return await PaymentController.checkout(order_id, current_user, session)
+    return await PaymentService.checkout(order_id, current_user, session)
 
 
 @router.post('/webhook', response_model=Message)
 async def webhook(request: Request, session: T_Session):
-    return await PaymentController.webhook(request, session)
+    return await PaymentService.webhook(request, session)

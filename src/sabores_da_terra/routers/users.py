@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Header, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.sabores_da_terra.controllers.user_controler import UserControler
+from src.sabores_da_terra.services.user_service import UserService
 from src.sabores_da_terra.database import get_session
 from src.sabores_da_terra.models import User
 from src.sabores_da_terra.schemas import (
@@ -25,12 +25,12 @@ T_Admin = Annotated[User, Depends(get_admin)]
 async def create_user(
     user: UserSchema, session: T_Session, admin_secret=Header(default=None)
 ):
-    return await UserControler.create(user, session, admin_secret)
+    return await UserService.create(user, session, admin_secret)
 
 
 @router.get('/', response_model=UserList)
 async def read_users(current_user: T_Admin, session: T_Session):
-    return await UserControler.read_all(session)
+    return await UserService.read_all(session)
 
 
 @router.get('/{user_id}', response_model=UserPublic)
@@ -39,7 +39,7 @@ async def read_user_by_id(
     user_id: int,
     session: T_Session,
 ):
-    return await UserControler.read_by_id(user_id, session)
+    return await UserService.read_by_id(user_id, session)
 
 
 @router.put('/{user_id}', response_model=UserPublic)
@@ -49,7 +49,7 @@ async def update_user(
     session: T_Session,
     current_user: T_CurrentUser,
 ):
-    return await UserControler.update(user_id, user, session, current_user)
+    return await UserService.update(user_id, user, session, current_user)
 
 
 @router.delete('/{user_id}', response_model=Message)
@@ -59,4 +59,4 @@ async def delete_user(
     current_user: T_CurrentUser,
     response: Response
 ):
-    return await UserControler.delete(user_id, session, current_user, response)
+    return await UserService.delete(user_id, session, current_user, response)
