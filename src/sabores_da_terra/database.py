@@ -4,11 +4,10 @@ from src.sabores_da_terra.settings import Settings
 
 engine = create_async_engine(
     Settings().DATABASE_URL,
-    pool_size=20,
-    max_overflow=10,
+    pool_size=15,
+    max_overflow=7,
     pool_timeout=30,
-    pool_recycle=3600
-
+    pool_recycle=3600,
 )
 
 

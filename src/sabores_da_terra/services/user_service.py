@@ -9,7 +9,7 @@ from src.sabores_da_terra.models import Order, User
 from src.sabores_da_terra.security import Settings, get_password_hash
 
 
-class UserControler:
+class UserService:
     @staticmethod
     async def create(user, session, admin_secret):
         db_user = await session.scalar(
@@ -67,7 +67,8 @@ class UserControler:
         if not current_user:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
-                detail='Could not validate credentials')
+                detail='Could not validate credentials',
+            )
 
         if current_user.id != user_id:
             raise HTTPException(
@@ -99,7 +100,8 @@ class UserControler:
         if not current_user:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
-                detail='Could not validate credentials')
+                detail='Could not validate credentials',
+            )
 
         if current_user.id != user_id:
             raise HTTPException(
@@ -110,6 +112,6 @@ class UserControler:
         await session.delete(current_user)
         await session.commit()
 
-        response.delete_cookie("access_token")
+        response.delete_cookie('access_token')
 
         return {'message': 'User deleted'}

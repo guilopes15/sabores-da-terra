@@ -77,7 +77,7 @@ def test_refresh_token_expire_dont_refresh(client, user):
     with freeze_time('2025-09-17 13:01:00'):
         response = client.post(
             '/api/auth/refresh_token',
-            headers={'Authorization': f'bearer {token}'}
+            headers={'Authorization': f'bearer {token}'},
         )
         assert response.status_code == HTTPStatus.UNAUTHORIZED
         assert response.json() == {'detail': 'Could not validate credentials'}
@@ -104,7 +104,7 @@ def test_create_cookie_for_login(client, user):
     assert len(token_value) > 0
 
     set_cookie = response.headers.get('set-cookie')
-    assert "HttpOnly" in set_cookie
+    assert 'HttpOnly' in set_cookie
 
 
 def test_refresh_cookie(client, token):

@@ -11,13 +11,14 @@ from src.sabores_da_terra.notification import send_email
 from src.sabores_da_terra.settings import Settings
 
 
-class PaymentController:
+class PaymentService:
     @staticmethod
     async def checkout(order_id, current_user, session):
         if not current_user:
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
-                detail='Could not validate credentials')
+                detail='Could not validate credentials',
+            )
 
         db_order = await session.scalar(
             select(Order)
@@ -104,7 +105,7 @@ class PaymentController:
 
                         if db_product:
                             db_product.stock_quantity = max(
-                            db_product.stock_quantity - item.quantity, 0
+                                db_product.stock_quantity - item.quantity, 0
                             )
 
                     await session.commit()
@@ -115,9 +116,9 @@ class PaymentController:
                         sender=Settings().EMAIL_SENDER,
                         recipient=Settings().EMAIL_RECIPIENT,
                         smtp_password=Settings().SMTP_PASSWORD,
-                        custom_message='''
+                        custom_message="""
                         Pedido não foi encontrado! Verifique o Sistema
-                        de Pagamento.'''
+                        de Pagamento.""",
                     )
 
                 except OperationalError:
@@ -125,7 +126,7 @@ class PaymentController:
                         sender=Settings().EMAIL_SENDER,
                         recipient=Settings().EMAIL_RECIPIENT,
                         smtp_password=Settings().SMTP_PASSWORD,
-                        custom_message='Banco de dados não responde!'
+                        custom_message='Banco de dados não responde!',
                     )
 
                 else:
@@ -133,14 +134,14 @@ class PaymentController:
                         'id': db_order.id,
                         'user_id': db_order.user_id,
                         'total': db_order.total_amount,
-                        'time': db_order.updated_at
+                        'time': db_order.updated_at,
                     }
 
                     await send_email(
                         sender=Settings().EMAIL_SENDER,
                         recipient=Settings().EMAIL_RECIPIENT,
                         smtp_password=Settings().SMTP_PASSWORD,
-                        order_data=email_data
+                        order_data=email_data,
                     )
 
                     return {'message': 'Order processed successfully.'}

@@ -1,6 +1,6 @@
 # Regras de Negócio
 
-Os **controllers**, **models** e **event listeners** definem todas as regras de negócio do projeto.
+Os **services**, **models** e **event listeners** definem todas as regras de negócio do projeto.
 
 ## Models
 
@@ -34,11 +34,11 @@ Refletem a estrutura do banco de dados a partir de classes.
 - Possui um campo opcional `product_image`.
 - Possui relacionamento com `Products`.
 
-## Controllers
+## Services
 
 São classes que agrupam métodos e definem o comportamento de cada rota de acordo com o verbo HTTP. Contemplam a **session**, o **schema** e as **permissões**, executam verificações/validações e persistem os dados no banco.
 
-### User Controller
+### User Service
 
 - **create**
     - Possui um parâmetro opcional `admin_secret`.
@@ -64,7 +64,7 @@ São classes que agrupam métodos e definem o comportamento de cada rota de acor
     - Se não estiver logado ou o `id` não for o do usuário logado, retorna erro.
     - Deleta o usuário do banco e o cookie.
 
-### Product Controller
+### Product Service
 
 - **create**
     - Verifica se o produto já existe; se existir, retorna erro.
@@ -91,7 +91,7 @@ São classes que agrupam métodos e definem o comportamento de cada rota de acor
     - Busca o produto pelo `id`; se não encontrar, retorna erro.
     - Altera o campo `is_active` para `false` e persiste.
 
-### Order Controller
+### Order Service
 
 - **create**
     - Requer login; se não, retorna erro.
@@ -128,7 +128,7 @@ São classes que agrupam métodos e definem o comportamento de cada rota de acor
     - Requer login; se não, retorna erro.
     - Busca uma order pelo `id`; se existir, deleta, senão retorna erro.
 
-### Payment Controller
+### Payment Service
 
 - **checkout**
     - Requer login; se não, retorna erro.

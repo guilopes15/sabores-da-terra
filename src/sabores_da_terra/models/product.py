@@ -84,9 +84,11 @@ def update_price_in_pending_orders(mapper, connection, target):
             update(OrderItem)
             .where(
                 (OrderItem.product_id == target.id)
-                & (OrderItem.order_id.in_(
-                    select(Order.id).where(Order.status == 'pending')
-                ))
+                & (
+                    OrderItem.order_id.in_(
+                        select(Order.id).where(Order.status == 'pending')
+                    )
+                )
             )
             .values(price=target.price)
         )
@@ -106,11 +108,13 @@ def update_price_in_pending_orders(mapper, connection, target):
             update(Order)
             .where(
                 (Order.status == 'pending')
-                & (Order.id.in_(
-                    select(OrderItem.order_id)
-                    .where(OrderItem.product_id == target.id)
-                    .distinct()
-                ))
+                & (
+                    Order.id.in_(
+                        select(OrderItem.order_id)
+                        .where(OrderItem.product_id == target.id)
+                        .distinct()
+                    )
+                )
             )
             .values(total_amount=subquery)
         )

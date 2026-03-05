@@ -125,7 +125,7 @@ Foi utilizado o [siege](https://github.com/JoeDog/siege) para executar o teste d
 - O Teste foi feito usando apenas 1 rota de GET (leitura).
 - Leve em consideração que o teste foi feito em um ambiente wsl, com 1cpu e 2gb de memoria e sem cache.
 
-Mesmo com as limitações acima, o app consegui manter 450 usuarios simultaneos, com 100% de disponilidade e 0 falhas de requests.
+Mesmo com as limitações acima, o app consegui manter 450 usuarios simultaneos em média, com 100% de disponilidade e 0 falhas de requests.
 
 Veja o resultado abaixo:
 
