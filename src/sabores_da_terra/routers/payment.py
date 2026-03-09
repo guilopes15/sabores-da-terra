@@ -1,7 +1,7 @@
 from typing import Annotated
 
 import stripe
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.sabores_da_terra.database import get_session
@@ -30,5 +30,9 @@ async def checkout(
 
 
 @router.post('/webhook', response_model=Message)
-async def webhook(request: Request, session: T_Session):
-    return await PaymentService.webhook(request, session)
+async def webhook(
+    request: Request,
+    session: T_Session,
+    background_tasks: BackgroundTasks
+):
+    return await PaymentService.webhook(request, session, background_tasks)

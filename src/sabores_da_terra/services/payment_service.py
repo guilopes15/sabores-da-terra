@@ -63,7 +63,7 @@ class PaymentService:
         return {'checkout_url': create_checkout.url}
 
     @staticmethod
-    async def webhook(request, session):
+    async def webhook(request, session, background_task):
         sig_header = request.headers.get('stripe-signature')
 
         try:
@@ -112,7 +112,7 @@ class PaymentService:
                     await session.refresh(db_order)
 
                 except (AttributeError, TypeError, ValueError):
-                    await send_email(
+                    background_task.add_task(send_email,
                         sender=Settings().EMAIL_SENDER,
                         recipient=Settings().EMAIL_RECIPIENT,
                         smtp_password=Settings().SMTP_PASSWORD,
@@ -122,11 +122,11 @@ class PaymentService:
                     )
 
                 except OperationalError:
-                    await send_email(
+                    background_task.add_task(send_email,
                         sender=Settings().EMAIL_SENDER,
                         recipient=Settings().EMAIL_RECIPIENT,
                         smtp_password=Settings().SMTP_PASSWORD,
-                        custom_message='Banco de dados não responde!',
+                        custom_message='Banco de dados não está respondendo!',
                     )
 
                 else:
@@ -137,7 +137,7 @@ class PaymentService:
                         'time': db_order.updated_at,
                     }
 
-                    await send_email(
+                    background_task.add_task(send_email,
                         sender=Settings().EMAIL_SENDER,
                         recipient=Settings().EMAIL_RECIPIENT,
                         smtp_password=Settings().SMTP_PASSWORD,
