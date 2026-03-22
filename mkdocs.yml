@@ -14,6 +14,7 @@ nav:
           - Payment: routers/payment.md
     - Relacionamento de Entidades: entidades.md
     - Infra: infra.md
+    - ChangeLog: changelog.md
 
 theme:
     name: material
@@ -22,6 +23,22 @@ theme:
         - navigation.tabs # Adiciona abas no menu
         - navigation.top # Botão "voltar ao topo"
         - search.highlight # Destaca palavras na pesquisa
+        - navigation.expand
+    palette:
+        - scheme: default
+          primary: green
+          accent: green
+          toggle:
+              icon: material/weather-night
+              name: Mude para o modo escuro
+        - scheme: slate
+          primary: green
+          accent: green
+          toggle:
+              icon: material/weather-sunny
+              name: Mude para o modo claro
+    language: pt-BR
+    favicon: assets/favicon.ico
 
 markdown_extensions:
     - toc:
@@ -35,3 +52,7 @@ markdown_extensions:
     - pymdownx.tabbed
     - pymdownx.highlight
     - pymdownx.details
+    - pymdownx.snippets
+
+plugins:
+    - towncrier

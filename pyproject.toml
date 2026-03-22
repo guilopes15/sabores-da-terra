@@ -1,9 +1,9 @@
 [project]
 name = "sabores-da-terra"
-version = "0.1.0"
+version = "1.0.0"
 description = ""
 authors = [
-    {name = "guilherme",email = "guilherme-lopes58@hotmail.com"}
+    {name = "guilherme", email = "guilherme-lopes58@hotmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -31,20 +31,22 @@ packages = [
 ]
 package-mode = false
 
-
 [tool.poetry.group.dev.dependencies]
-mkdocs = "^1.6.1"
-mkdocs-material = "^9.6.18"
 ruff = "^0.12.11"
 pytest = "^8.4.2"
 freezegun = "^1.5.5"
 pytest-cov = "^7.0.0"
 testcontainers = "^4.13.3"
+towncrier = "^25.8.0"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6.1"
+mkdocs-material = "9.6.18"
+mkdocs-towncrier = "^0.1.5"
 
 [tool.ruff]
 line-length = 79
 extend-exclude = ['migrations']
-
 
 [tool.ruff.lint]
 preview = true
@@ -62,6 +64,14 @@ quote-style = 'single'
 pythonpath = "."
 addopts = '-p no:warnings'
 asyncio_default_fixture_loop_scope = 'function'
+
+[tool.towncrier]
+directory = 'changelog.d'
+filename = 'CHANGELOG.md'
+title_format = '## Sabores da Terra - [{version}](https://github.com/guilopes15/sabores-da-terra/releases/{version})'
+issue_format = '[#{issue}](https://github.com/guilopes15/sabores-da-terra/issues/{issue})'
+
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
