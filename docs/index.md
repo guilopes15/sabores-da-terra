@@ -1,6 +1,6 @@
 # Sobre o projeto
 
-Bem vindo á documentação do Sabores da Terra, uma loja online de produtos orgânicos regionais.
+Bem vindo á documentação do Sabores da Terra, uma Plataforma online de produtos orgânicos regionais.
 
 ## Pagina Web
 A pagina web é a principal interface para o uso e o gerencianto da loja.
@@ -10,7 +10,7 @@ A pagina web é a principal interface para o uso e o gerencianto da loja.
 - Cada produto possui sua propria pagina com todas as suas informações e um botão para adicionar o produto no carrinho de compras.
 - O carrinho de compras mostra todos os items do pedido do cliente. Com a possibilidade de alterar items como desejar.
 - O botão de compra redireciona o cliente para um sistema de pagamento externo.
-- Um painel administrativo permite o admin, criar produtos, visualizar dados dos clientes e dos pedidos.
+- Um painel administrativo permite o admin criar, alterar e remover produtos, visualizar dados dos clientes e dos pedidos.
 
 
 ### Login e Cadastro
@@ -49,3 +49,4 @@ O bot de telegram permite qualquer pessoa sem login, visualizar os produtos em t
 - Tambem possui links de redirecionamento para a pagina web e para as redes socias da loja.
 
 ![bot](assets/bot.jpg)
+![bot](assets/bot2.jpg)
