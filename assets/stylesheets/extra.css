@@ -1,0 +1,12 @@
+.md-header__title {
+    order: 0;
+    font-size: 30px;
+}
+
+.md-search__form {
+    width: 100%;
+}
+
+.md-header__option {
+    order: 1;
+}
