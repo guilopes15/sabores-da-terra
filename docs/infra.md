@@ -45,7 +45,7 @@ CMD ["sh", "-c", "\
 
 ```
 
-## Gerencimento de Containers
+## Gerenciamento de Containers
 O projeto possui 4 containers ao todo, o arquivo compose.yaml gerencia e define como os container vão ser criados e como irão se comportar.
 
 - sabores_da_terra_app: O principal container do projeto, responsável por executar tanto a API quanto o Bot. E possui uma réplica adicional para permitir o load balance e maior disponibilidade do serviço.
@@ -113,13 +113,13 @@ volumes:
   pgdata:
 ```
 
-## Gerenciamneto de recursos
+## Gerenciamento de recursos
 O projeto tem um gerenciamento de recursos de hardware minuncioso, e utiliza ao todo 1cpu e 2gb de memoria.
 
 - Cada container do sabores_da_terra_app possui 2 workers, consumindo em média 340MB.
 - O banco de dados tem a maior parte da memoria disponivel para maior disponibilidade.
 
-## Teste de carga e Performace
+## Teste de carga e Performance
 Foi utilizado o [siege](https://github.com/JoeDog/siege) para executar o teste de carga.
 
 - O Teste foi feito usando apenas 1 rota de GET (leitura).
@@ -129,4 +129,4 @@ Mesmo com as limitações acima, o app consegui manter 450 usuarios simultaneos 
 
 Veja o resultado abaixo:
 
-![grafico](assets/siege_analysis.png)
+[![grafico](assets/siege_analysis.png)](assets/siege_analysis.png)

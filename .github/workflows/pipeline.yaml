@@ -1,43 +1,60 @@
 name: Pipeline
 on: [push, pull_request]
 
+permissions:
+    contents: write
+
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with :
-          python-version: "3.12"
-      - run: pip install ruff
-      - run: ruff check . 
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+            - run: pip install ruff
+            - run: ruff check .
 
-  test:
-    runs-on: ubuntu-latest
-    needs: lint
+    test:
+        runs-on: ubuntu-latest
+        needs: lint
 
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      ALGORITHM: ${{ secrets.ALGORITHM }}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-      STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-      WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
-      ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
-      TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
-      TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-      EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
-      EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
-    
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: 
-          python-version: "3.12"
-      - run: pipx install poetry
-      - run: poetry install
-      - run: poetry run pytest -vv
+        env:
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            SECRET_KEY: ${{ secrets.SECRET_KEY }}
+            ALGORITHM: ${{ secrets.ALGORITHM }}
+            ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+            STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+            WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+            ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+            TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+            TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+            TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+            SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+            EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+            EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
 
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+            - run: pipx install poetry
+            - run: poetry install --without docs
+            - run: poetry run pytest -vv
 
+    doc:
+        runs-on: ubuntu-latest
+        needs: test
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+            - run: pipx install poetry
+            - run: poetry install --only docs
+            - run: |
+                  git config user.name "github-actions"
+                  git config user.email "github-actions@github.com"
+            - run: poetry run mkdocs build --site-dir public
+            - run: poetry run mkdocs gh-deploy --force

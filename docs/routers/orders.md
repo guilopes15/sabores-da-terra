@@ -1,7 +1,7 @@
 **POST** `/api/orders/` - Cria uma order de venda - ***login required***
 
 Todas as orders são criadas com o status pending por default, mas o status pode ser passado via json.
-Cada user so pode ir uma order(pedido) pendente por vez, para criar um novo pedido é necessario pagar ou excluir o pedido atual.
+Cada user so pode ter apenas uma order(pedido) pendente por vez, para criar um novo pedido é necessario pagar ou excluir o pedido atual.
 
 Exemplo de uso com curl:
 
@@ -64,7 +64,7 @@ Response 400 - BAD REQUEST:
 
 ***
 
-**GET** `/api/orders/my-orders` - Busca a order que quem esta logado - ***login required***
+**GET** `/api/orders/my-orders` - Busca a order do user que esta logado - ***login required***
 
 Exemplo de uso com curl:
 
@@ -247,7 +247,7 @@ Response 400 - BAD REQUEST:
 ```
 ***
 
-**DELETE** `/api/orders/my-orders` - Deleta a order que quem esta logado - ***login required***
+**DELETE** `/api/orders/my-orders` - Deleta a order do user que esta logado - ***login required***
 
 Exemplo de uso com curl:
 

@@ -44,7 +44,7 @@ Response 409 - CONFLICT:
 
 ***
 
-**GET** `/api/products/` - Busca todos os produtos
+**GET** `/api/products/` - Busca todos os produtos.
 
 Exemplo de uso com curl:
 
@@ -83,7 +83,7 @@ Response 200 - OK:
 }
 ```
 ***
-**GET** `/api/products/{product_id}` - Busca produtos por ID
+**GET** `/api/products/{product_id}` - Busca produtos por ID.
 
 Exemplo de uso com curl:
 
@@ -114,11 +114,11 @@ Response 404 - NOT FOUND:
 ```
 ***
 
-**GET** `/api/products/filters` - Busca produtos por queryparams
+**GET** `/api/products/filters` - Busca produtos por queryparams.
 
 Queryparams:
 
-- name: str or null =  Busca os produto pelo nome desejado
+- name: str or null =  Busca os produto pelo nome desejado.
 - offset: int = Por onde começa a busca, default é 0.
 - limit: int = quantidade de items máxima retornada, default é 10.
 
@@ -196,8 +196,8 @@ Response 409 - CONFLICT:
 ```
 ***
 
-**DELETE** `/api/products/{products_id}` - Deletar produto - ***admin permission required***
-O delete faz um soft delete, apenas muda o is_active para false.
+**DELETE** `/api/products/{products_id}` - Deletar produto - ***admin permission required*** -
+Faz um soft delete, apenas muda o is_active para false.
 
 Exemplo de uso com curl:
 ```bash

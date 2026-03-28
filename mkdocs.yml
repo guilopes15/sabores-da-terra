@@ -1,8 +1,12 @@
 site_name: Sabores da Terra
+repo_url: https://github.com/guilopes15/sabores-da-terra
+repo_name: guilopes15/sabores-da-terra
+edit_uri: tree/main/docs
+
 nav:
     - Início: index.md
     - Como começar?: get_started.md
-    - Fluxo de utilização: fluxo.md
+    - Fluxo de utilização: flow.md
     - Autentificação e Autorização: auth.md
     - Regras de Negócio: rules.md
     - Rotas:
@@ -12,18 +16,25 @@ nav:
           - Products: routers/products.md
           - Orders: routers/orders.md
           - Payment: routers/payment.md
-    - Relacionamento de Entidades: entidades.md
+    - Relacionamento de Entidades: entities.md
     - Infra: infra.md
     - ChangeLog: changelog.md
+
+plugins:
+    - search:
+          highlight: true
+    - towncrier
 
 theme:
     name: material
     features:
         - navigation.instant # Carrega páginas sem recarregar o site
         - navigation.tabs # Adiciona abas no menu
+        - navigation.sections
         - navigation.top # Botão "voltar ao topo"
-        - search.highlight # Destaca palavras na pesquisa
         - navigation.expand
+        - content.code.copy
+        - content.action.edit
     palette:
         - scheme: default
           primary: green
@@ -54,5 +65,5 @@ markdown_extensions:
     - pymdownx.details
     - pymdownx.snippets
 
-plugins:
-    - towncrier
+extra_css:
+    - assets/stylesheets/extra.css

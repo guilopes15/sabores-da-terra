@@ -22,7 +22,7 @@ http://localhost/api
 }
 ```
 
-- Todos os endpoints que possuem, *Content-Type: application/json* ou *Content-Type: application/x-www-form-urlencoded* ou que precisam passar o token jwt pelo header, compartilham responses de erro de quebra de *contrato* - **422** UNPROCESSABLE ENTITY.
+- Todos os endpoints que possuem: *Content-Type: application/json*,   *Content-Type: application/x-www-form-urlencoded* ou que precisam passar o token jwt pelo header, compartilham responses de erro de quebra de *contrato* - **422** UNPROCESSABLE ENTITY.
 
 ```json
 {

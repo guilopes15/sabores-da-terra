@@ -1,4 +1,4 @@
-**POST** `/api/auth/token` - Gera o token JWT
+**POST** `/api/auth/token` - Gera o token JWT.
 
 Exemplo de uso com curl:
 

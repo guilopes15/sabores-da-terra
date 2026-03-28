@@ -23,7 +23,7 @@ Response 404 - NOT_FOUND:
 ```
 ***
 
-**POST** `/api/payment/webhook` - Recebe um request quando um pagamento for realizado
+**POST** `/api/payment/webhook` - Recebe um request quando um pagamento for realizado.
 
 Response 200 - OK:
 

@@ -73,11 +73,23 @@ Converse com o @BotFather no seu proprio app do telegram e crie seu proprio bot 
 
 Acesse o gmail, por exemplo, para obter o SMTP_PASSWORD [clicando aqui](https://myaccount.google.com/apppasswords).
 
-## Subindo o server localmente
+### Subindo o server localmente:
 Com os passos anteriores feitos com sucesso, digite no terminal o seguinte comando:
 
 ```bash
 docker compose up --build
 ```
-
 Com isso o app já esta no ar em: *http://localhost/*
+
+### Subindo documentação localmente:
+```bash
+poetry run mkdocs serve
+```
+### Executando testes:
+```bash
+poetry run pytest -vv
+```
+### Executando linter e formatador:
+```bash
+poetry run ruff check . --fix && ruff format .
+```

@@ -8,7 +8,7 @@
 
 **OrderItem → Product**
 
-- Cada item do pedido refere-se a um único produto (N:1).
+- Cada item do pedido refere-se a um único produto (1:1).
 
 **Veja abaixo:**
 

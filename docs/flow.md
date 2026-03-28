@@ -1,4 +1,4 @@
-O usuario final tem acesso ao Sabores da terra de duas formas distintas:
+O usuario final tem acesso a Plataforma de duas formas distintas:
 
   - Atraves da pagina web, onde possui os principais recursos como criação de conta, visualização do produtos, o carrinho de compras e o por fim a efetivação do pagamento.
 
@@ -7,12 +7,12 @@ O usuario final tem acesso ao Sabores da terra de duas formas distintas:
 
 O admin possui um painel administrativo, onde é possivel cadastrar vendas manuais, sendo assim o sistema centraliza todas as vendas realizadas.
 
-Quando o usuario decidir realizar a compra, o checkout é acionado, e um link para um sistema de pagamentos externo com todos os items do pedido é criado, e o usuario é redirecionado.
+Quando o usuario decidir realizar a compra, o checkout é acionado, e um link para um sistema de pagamentos externo com todos os items do pedido é criado, em seguida o usuario é redirecionado.
 
-Quando o pedido for pago, o sistema de pagamento envia um webhook para o sistema, então o status é definido como pago e um email é enviado ao admin como aviso.
+Quando o pedido for pago, o sistema de pagamento envia um webhook para o sistema, então o status do pedido é definido como pago e um email é enviado ao admin como aviso.
 
 
-**Veja abaixo o Diagrama do uso do software pelo cliente:**
+**Veja abaixo o Diagrama do uso do software:**
 
 ```mermaid
 graph TD

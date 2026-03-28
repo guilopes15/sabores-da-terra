@@ -1,11 +1,11 @@
-**POST** `/api/users` - Usada para criar novo usuario comum
+**POST** `/api/users` - Usada para criar novo usuario comum.
 
 Exemplo de uso com curl:
 ```bash
 curl -X "POST http://localhost/api/users" -H "Content-Type: application/json" -d '{"username":"example", "email": "example@example.com", "password": 123456}'
 ```
 
-**POST** `/api/users` - Tambem usada para criar novo usuario admin
+**POST** `/api/users` - Tambem usada para criar novo usuario admin.
 
 Exemplo de uso com curl:
 
@@ -45,7 +45,7 @@ Response 409 - CONFLICT:
 
 ***
 
-**GET** `/api/users/` - Busca todos os usuarios cadastrados no sistema
+**GET** `/api/users/` - Busca todos os usuarios cadastrados no sistema.
 
 Exemplo de uso com curl:
 
@@ -81,7 +81,7 @@ Response 200 - OK:
 
 ```
 ***
-**GET** `/api/users{user_id}` - Busca usuario por ID
+**GET** `/api/users{user_id}` - Busca usuario por ID.
 
 Exemplo de uso com curl:
 ```bash

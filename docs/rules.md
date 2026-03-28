@@ -15,7 +15,7 @@ Refletem a estrutura do banco de dados a partir de classes.
 ### Products
 - Possui **nome único**, para se diferenciar dos outros produtos.
 - Possui o campo booleano `is_active`, que atua como um soft delete.
-- É possível definir uma imagem para o produto (opcional); caso não adicione, uma imagem **placeholder** é utilizada.
+- É possível definir uma imagem para o produto (opcional), e caso contrario uma imagem **placeholder** é utilizada.
 - Possui **constraints personalizadas**:
     - `stock` deve ser >= 0
     - `preço` deve ser > 0
@@ -23,9 +23,9 @@ Refletem a estrutura do banco de dados a partir de classes.
 ### Order
 - Possui um campo `user_id` como **chave estrangeira**, indicando qual usuário criou o pedido.
 - Possui uma **constraint personalizada**: `total_amount` precisa ser >= 0.
-- O campo `status` atua como um **enum**, restringindo o status a três categorias.
+- O campo `status` atua como um **enum**, restringindo o status a três categorias: 'pending', 'canceled' e 'paid'.
 - O pedido pode ter vários itens.
-- Deve possuir todos os dados dos itens do pedido, conectado em relacionamento com `OrderItems`.
+- Deve possuir todos os dados dos itens do pedido, conectando-se em relacionamento com `OrderItems`.
 
 ### OrderItems
 - Possui um campo `order_id` como **chave estrangeira**, indicando a qual order o item pertence.
@@ -53,21 +53,21 @@ São classes que agrupam métodos e definem o comportamento de cada rota de acor
     - Busca no banco e retorna todos os usuários cadastrados.
 
 - **read_by_id**
-    - Busca um usuário pelo `id`; se encontrado, retorna, senão retorna erro.
+    - Busca um usuário pelo `id`, se encontrado retorna, senão retorna erro.
 
 - **update**
-    - Se não estiver logado ou o `id` não for o do usuário logado, retorna erro.
+    - Se não estiver logado ou o `id` não pertencer ao usuário logado, retorna erro.
     - Altera os dados do usuário e faz commit.
     - Se o email já existir, retorna `IntegrityError`.
 
 - **delete**
-    - Se não estiver logado ou o `id` não for o do usuário logado, retorna erro.
+    - Se não estiver logado ou o `id` não pertencer ao usuário logado, retorna erro.
     - Deleta o usuário do banco e o cookie.
 
 ### Product Service
 
 - **create**
-    - Verifica se o produto já existe; se existir, retorna erro.
+    - Verifica se o produto já existe, se existir retorna erro.
     - Preenche o model com os dados e persiste.
     - Retorna os dados do produto.
 
@@ -75,7 +75,7 @@ São classes que agrupam métodos e definem o comportamento de cada rota de acor
     - Retorna todos os produtos cadastrados.
 
 - **read_by_id**
-    - Busca um produto pelo `id`; se encontrado, retorna, senão retorna erro.
+    - Busca um produto pelo `id`, se encontrado retorna, senão retorna erro.
 
 - **pagination**
     - Filtra produtos pelo nome.
@@ -83,55 +83,55 @@ São classes que agrupam métodos e definem o comportamento de cada rota de acor
     - Define o offset de início da busca.
 
 - **patch**
-    - Busca o produto pelo `id`; se não encontrar, retorna erro.
+    - Busca o produto pelo `id`, se não encontrar retorna erro.
     - Altera os dados do produto e persiste.
     - Se o nome do produto já existir, retorna erro.
 
 - **delete**
-    - Busca o produto pelo `id`; se não encontrar, retorna erro.
+    - Busca o produto pelo `id`, se não encontrar retorna erro.
     - Altera o campo `is_active` para `false` e persiste.
 
 ### Order Service
 
 - **create**
-    - Requer login; se não, retorna erro.
+    - Requer login, se não retorna erro.
     - Se o usuário já tiver uma order pendente, retorna a order.
     - Cria a order com os dados iniciais, sem itens.
     - Verifica os produtos da order:
-        - Se existem
-        - Se estão ativos
-        - Se há estoque suficiente
+        - Se existem.
+        - Se estão ativos.
+        - Se há estoque suficiente.
     - Se a verificação falhar, retorna erro.
     - Se a quantidade do produto for > 0, adiciona na order.
     - Persiste os dados e retorna a order.
 
 - **read**
-    - Requer login; se não, retorna erro.
-    - Busca a order pendente do usuário logado; se existir, retorna, senão retorna erro.
+    - Requer login, se não retorna erro.
+    - Busca a order pendente do usuário logado, se existir retorna, senão retorna erro.
 
 - **read_by_id**
-    - Busca uma order pelo `id`; se existir, retorna, senão retorna erro.
+    - Busca uma order pelo `id`, se existir retorna, senão retorna erro.
 
 - **update**
-    - Requer login; se não, retorna erro.
-    - Busca a order pendente do usuário logado; se não existir, retorna erro.
+    - Requer login, se não retorna erro.
+    - Busca a order pendente do usuário logado, se não existir retorna erro.
     - Valida o produto a ser modificado:
         - Existe?
         - Está ativo?
         - Há estoque suficiente?
-    - Verifica se o produto já está na order; se não, adiciona.
+    - Verifica se o produto já está na order, se não adiciona.
         - Se a quantidade do produto for > 0, atualiza quantidade e preço.
         - Se for 0, remove o produto da order.
     - Atualiza o total a pagar da order e persiste.
 
 - **delete**
-    - Requer login; se não, retorna erro.
-    - Busca uma order pelo `id`; se existir, deleta, senão retorna erro.
+    - Requer login, se não retorna erro.
+    - Busca uma order pelo `id`, se existir deleta, senão retorna erro.
 
 ### Payment Service
 
 - **checkout**
-    - Requer login; se não, retorna erro.
+    - Requer login, se não retorna erro.
     - Busca a order pendente do usuário com `total_amount > 0`.
         - Se não existir, retorna erro.
         - Se existir, monta um objeto com todos os itens da order.
